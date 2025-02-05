@@ -1,0 +1,454 @@
+:root {
+  /* Colores base */
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --background-color: #ecf0f1;
+  --text-color: #2c3e50;
+
+  /* Colores módulos */
+  --color-m6: #ffb6c1;
+  --color-m7: #98fb98;
+  --color-m8: #87cefa;
+  --color-m9: #dda0dd;
+  --color-m12: #f0e68c;
+
+  /* Colores estados */
+  --color-cambio: #fff3cd;
+  --color-cambio-borde: #ffeeba;
+  --color-error: #fee;
+  --color-error-borde: #faa;
+
+  /* Espaciado */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+
+  /* Bordes */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+}
+
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+.container {
+  width: min(90%, 1200px);
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-lg); 
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  table-layout: fixed; /* Fuerza ancho uniforme */
+}
+
+/* Ajustar el ancho de la primera columna (horas) */
+th:first-child,
+td:first-child {
+  width: 80px; /* Ancho reducido para la columna de horas */
+  min-width: 80px;
+  font-size: 0.9em; /* Texto ligeramente más pequeño */
+  white-space: nowrap; /* Evitar saltos de línea */
+}
+
+/* Mantener el ancho del resto de columnas */
+td:not(:first-child) {
+  width: auto;
+  min-width: 120px;
+  height: 120px;
+}
+
+th {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+td {
+  padding: 20px;
+  border: 1px solid #ddd;
+  height: 180px; /* Altura aumentada */
+  width: 180px; /* Ancho aumentado */
+  vertical-align: top;
+  overflow: visible; /* Permitir que el contenido sea visible */
+}
+
+.cella {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cella:hover {
+  background-color: var(--secondary-color);
+  color: white;
+  transform: scale(1.02);
+}
+
+button {
+  display: block;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modulo-m6 {
+  background-color: var(--color-m6) !important;
+  transition: all 0.3s ease;
+}
+
+.modulo-m7 {
+  background-color: var(--color-m7) !important;
+  transition: all 0.3s ease;
+}
+
+.modulo-m8 {
+  background-color: var(--color-m8) !important;
+  transition: all 0.3s ease;
+}
+
+.modulo-m9 {
+  background-color: var(--color-m9) !important;
+  transition: all 0.3s ease;
+}
+
+.modulo-m12 {
+  background-color: var(--color-m12) !important;
+  transition: all 0.3s ease;
+}
+
+.celda-vacia {
+  background-color: #f5f5f5;
+}
+
+.classe-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  height: auto;
+}
+
+.classe-info-basic {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.assignatura {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 6px;
+}
+
+.professor {
+  font-style: italic;
+  font-size: 1em;
+  margin-bottom: 6px;
+  color: #444;
+}
+
+.aula {
+  font-size: 0.95em;
+  color: #666;
+}
+
+#error-message {
+  padding: 10px;
+  margin: 10px 0;
+  background-color: var(--color-error);
+  border: 1px solid var(--color-error-borde);
+  border-radius: 4px;
+}
+
+.cambio-horario {
+  background-color: var(--color-cambio);
+  border: 2px solid var(--color-cambio-borde);
+  position: relative;
+  animation: highlight 2s ease-in-out infinite;
+  height: auto; /* Permite crecer solo a celdas con cambios */
+  max-height: none;
+  overflow: visible;
+  z-index: 1;
+}
+
+/* Añadir indicador de cambio */
+.cambio-horario::after {
+  content: '!';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25px;
+  height: 25px;
+  background-color: var(--accent-color);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  border-radius: 0 0 0 5px;
+  animation: pulse 2s infinite;
+}
+
+/* Animación del indicador */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes highlight {
+  0%, 50%, 100% {
+    transform: none;
+  }
+}
+
+.cambio-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+  font-size: 0.95em;
+}
+
+.cambio-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.cambio-info::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px; /* Icono más grande */
+  height: 28px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* Hacer los iconos más visibles */
+.cambio-absencia::before,
+.cambio-aula::before,
+.cambio-professor::before,
+.cambio-cancelada::before,
+.cambio-altres::before {
+  opacity: 0.9;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+/* Colores según tipo de cambio */
+.cambio-absència-professor {
+  background-color: #ffcdd2;
+  border-left: 3px solid #f44336;
+}
+
+.cambio-canvi-aula {
+  background-color: #c8e6c9;
+  border-left: 3px solid #4caf50;
+}
+
+.cambio-canvi-professor {
+  background-color: #bbdefb;
+  border-left: 3px solid #2196f3;
+}
+
+.cambio-classe-cancelada {
+  background-color: #ffecb3;
+  border-left: 3px solid #ffc107;
+}
+
+.cambio-altres {
+  background-color: #e1bee7;
+  border-left: 3px solid #9c27b0;
+}
+
+.cambio-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mejoras en los módulos */
+[class^="modulo-"] {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+[class^="modulo-"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tooltip para cambios */
+.cambio-horario::before {
+  content: attr(data-cambio);
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-color);
+  color: white;
+  padding: 5px 10px;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8em;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.cambio-horario:hover::before {
+  opacity: 1;
+}
+
+/* Media Queries mejorados */
+@media (max-width: 768px) {
+  :root {
+    --spacing-lg: 1rem;
+    --spacing-md: 0.8rem;
+  }
+
+  .container {
+    width: 98%;
+    padding: var(--spacing-xs);
+    overflow-x: auto; /* Permite scroll horizontal */
+  }
+
+  table {
+    font-size: 0.85rem;
+    min-width: 800px; /* Asegura que la tabla no se comprima demasiado */
+  }
+
+  td {
+    min-height: 100px;
+    min-width: 120px;
+    height: 120px;
+    width: 120px;
+  }
+
+  .cambio-info {
+    font-size: 0.8em;
+  }
+
+  th:first-child,
+  td:first-child {
+    width: 60px;
+    min-width: 60px;
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 480px) {
+  table {
+    font-size: 0.75rem;
+  }
+
+  th,
+  td {
+    padding: var(--spacing-xs);
+  }
+
+  .classe-info {
+    padding: var(--spacing-xs);
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.selector-setmana {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+#setmanaActual {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--primary-color);
+  min-width: 200px;
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.selectors {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+#selector-cicle,
+#selector-any {
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--primary-color);
+    min-width: 120px;
+}
