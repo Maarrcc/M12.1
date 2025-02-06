@@ -9,9 +9,10 @@ class Horari
         $this->pdo = $pdo;
     }
 
-    public function getHorariBase($cursComplet) {
+    public function getHorariBase($cursComplet)
+    {
         list($cicle, $any) = explode('-', $cursComplet);
-        
+
         $sql = "SELECT 
                 H.id_horari,
                 H.hora_inici, 
@@ -38,7 +39,7 @@ class Horari
     public function getCanvis($start, $end, $cursComplet)
     {
         list($cicle, $any) = explode('-', $cursComplet);
-        
+
         $sql = "SELECT 
                 C.id_horari,
                 C.tipus_canvi,

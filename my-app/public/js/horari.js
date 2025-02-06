@@ -167,7 +167,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // Hacer que la función esté accesible globalmente para el botón
 window.actualitzaHorari = actualitzaHorari;
 
-// Cambiar la URL de la petición AJAX
 async function carregarDades(start, end, cursComplet) {
   try {
     const response = await fetch(
@@ -177,6 +176,12 @@ async function carregarDades(start, end, cursComplet) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
+
+    if (data.error && data.redirect) {
+      window.location.href = data.redirect;
+      return;
+    }
+
     return data;
   } catch (error) {
     console.error("Error:", error);

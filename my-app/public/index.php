@@ -1,5 +1,14 @@
 <?php
+session_start();
 header('Access-Control-Allow-Origin: *');
+
+if (
+    !isset($_SESSION['user']) &&
+    !($_GET['controller'] === 'auth' && ($_GET['action'] === 'login' || $_GET['action'] === 'validate'))
+) {
+    header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
+    exit;
+}
 
 $config = require_once '../app/config/database.php';
 
@@ -30,7 +39,7 @@ try {
         default:
             throw new Exception('Controlador no encontrado');
     }
-    
+
     $controller->$action();
 } catch (Exception $e) {
     die("Error: " . $e->getMessage());
