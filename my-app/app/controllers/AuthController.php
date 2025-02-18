@@ -42,4 +42,47 @@ class AuthController
         header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
         exit;
     }
+    
+    public function register()
+    {
+        session_start();
+        require_once '../app/views/auth/sign-in.php';
+    }
+
+    public function store()
+    {
+        session_start();
+
+        $nom_usuari = $_POST['nom_usuari'] ?? '';
+        $nom = $_POST['nom'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $contrasenya = $_POST['contrasenya'] ?? '';
+        $rol = $_POST['rol'] ?? '';
+
+        // Validación básica
+        if (empty($nom_usuari) || empty($nom) || empty($email) || empty($contrasenya) || empty($rol)) {
+            $_SESSION['error'] = 'Tots els camps són obligatoris';
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=register');
+            exit;
+        }
+
+        // Validar que el rol sea válido
+        $rols_permesos = ['admin', 'alumne', 'professor'];
+        if (!in_array($rol, $rols_permesos)) {
+            $_SESSION['error'] = 'Rol no vàlid';
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=register');
+            exit;
+        }
+
+        $result = $this->usuariModel->create($nom_usuari, $nom, $email, $contrasenya, $rol);
+
+        if ($result['success']) {
+            $_SESSION['success'] = 'Usuari registrat correctament';
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
+        } else {
+            $_SESSION['error'] = $result['message'];
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=register');
+        }
+        exit;
+    }
 }

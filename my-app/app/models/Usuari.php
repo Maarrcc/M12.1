@@ -9,7 +9,7 @@ class Usuari
         $this->pdo = $pdo;
     }
 
-    public function login($username, $password) 
+    public function login($username, $password)
     {
         $sql = "SELECT id_usuari, contrasenya FROM usuaris WHERE nom_usuari = ?";
         $stmt = $this->pdo->prepare($sql);
@@ -20,10 +20,32 @@ class Usuari
             return ['success' => false, 'message' => 'Usuario no encontrado'];
         }
 
-        if (hash('sha256', $password) !== $user['contrasenya']) {
+        if (!password_verify($password, $user['contrasenya'])) {
             return ['success' => false, 'message' => 'Contraseña incorrecta'];
         }
 
         return ['success' => true, 'user' => $user];
+    }
+
+    public function create($nom_usuari, $nom, $email, $contrasenya, $rol)
+    {
+        try {
+            // Verificar si el usuario ya existe
+            $stmt = $this->pdo->prepare("SELECT id_usuari FROM usuaris WHERE nom_usuari = ? OR email = ?");
+            $stmt->execute([$nom_usuari, $email]);
+            if ($stmt->fetch()) {
+                return ['success' => false, 'message' => 'El nom d\'usuari o email ja existeix'];
+            }
+
+            // Insertar nuevo usuario
+            $sql = "INSERT INTO usuaris (nom_usuari, nom, email, contrasenya, rol) VALUES (?, ?, ?, ?, ?)";
+            $hashedPassword = password_hash($contrasenya, PASSWORD_DEFAULT);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$nom_usuari, $nom, $email, $hashedPassword, $rol]);
+
+            return ['success' => true];
+        } catch (PDOException $e) {
+            return ['success' => false, 'message' => 'Error al crear l\'usuari: ' . $e->getMessage()];
+        }
     }
 }

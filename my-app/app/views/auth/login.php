@@ -26,6 +26,9 @@
             <?php endif; ?>
             <button type="submit" class="btn-login">Iniciar sesión</button>
         </form>
+        <div class="register-link">
+            <a href="/M12.1/my-app/public/index.php?controller=auth&action=register">Registrar nou usuari</a>
+        </div>
     </div>
     <script src="/M12.1/my-app/public/js/login.js"></script>
 </body>

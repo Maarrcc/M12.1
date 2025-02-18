@@ -276,10 +276,6 @@ td {
   pointer-events: none;
 }
 
-.cambio-horario:hover::before {
-  opacity: 1;
-}
-
 /*====================
 6. Componentes de interfaz
 ====================*/

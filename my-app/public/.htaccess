@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /M12.1/my-app/public/
+
+    # Redirigir todas las solicitudes a index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . /M12.1/my-app/public/index.php [L]
+</IfModule>
+
+# Configuración de seguridad y rendimiento
+# Evitar listado de directorios
+Options -Indexes
+
+# Proteger archivos sensibles
+<FilesMatch "\.(htaccess|htpasswd|ini|phps|fla|psd|log|sh|sql|bak|swp|dist|cfg|config)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Configurar las cabeceras HTTP
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
