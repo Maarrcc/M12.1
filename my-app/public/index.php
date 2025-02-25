@@ -20,27 +20,42 @@ try {
     die("Error de conexión: " . $e->getMessage());
 }
 
-require_once '../app/controllers/HorariController.php';
-require_once '../app/controllers/AuthController.php';
+require_once '../app/config/config.php';
+require_once '../app/config/database.php';
+
+// Cargar los modelos
+require_once '../app/models/Assignatura.php';
 require_once '../app/models/Horari.php';
 require_once '../app/models/Usuari.php';
+require_once '../app/models/Aula.php';  
+// ... otros modelos
 
-$action = $_GET['action'] ?? 'login';
-$controller = $_GET['controller'] ?? 'auth';
+// Cargar los controladores
+require_once '../app/controllers/AssignaturesController.php';
+require_once '../app/controllers/HorariController.php';
+require_once '../app/controllers/AuthController.php';
+require_once '../app/controllers/AulaController.php';
+// ... otros controladores
+
+// Obtener el controlador y la acción de la URL
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'auth';
+$action = isset($_GET['action']) ? $_GET['action'] : 'login';
+
+// Construir el nombre de la clase del controlador
+$controllerName = ucfirst($controller) . 'Controller';
 
 try {
-    switch ($controller) {
-        case 'horari':
-            $controller = new HorariController($pdo);
-            break;
-        case 'auth':
-            $controller = new AuthController($pdo);
-            break;
-        default:
-            throw new Exception('Controlador no encontrado');
+    if (class_exists($controllerName)) {
+        $controller = new $controllerName($pdo);
+        if (method_exists($controller, $action)) {
+            $controller->$action();
+        } else {
+            throw new Exception('Acción no encontrada');
+        }
+    } else {
+        throw new Exception('Controlador no encontrado');
     }
-
-    $controller->$action();
 } catch (Exception $e) {
-    die("Error: " . $e->getMessage());
+    // Manejo de errores
+    echo "Error: " . $e->getMessage();
 }

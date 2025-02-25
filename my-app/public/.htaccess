@@ -5,7 +5,7 @@
     # Redirigir todas las solicitudes a index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /M12.1/my-app/public/index.php [L]
+    RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]
 </IfModule>
 
 # Configuración de seguridad y rendimiento

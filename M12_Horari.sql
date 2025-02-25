@@ -118,7 +118,6 @@ INSERT INTO Cursos (nom_cicle, any_academic) VALUES
 
 -- Inserció d'usuaris
 INSERT INTO Usuaris (nom_usuari, nom, email, contrasenya, rol) VALUES
-    ('admin', 'Admin', 'admin@mail.com', SHA2('admin_password', 256), 'admin'),
     ('alumne1', 'Alumne 1', 'alumne1@mail.com', SHA2('password1', 256), 'alumne'),
     ('gerard.herencia', 'Gerard Herencia', 'gerard.herencia@centre.com', SHA2('gh123', 256), 'professor'),
     ('xaloc.garay', 'Xaloc Garay', 'xaloc.garay@centre.com', SHA2('xg123', 256), 'professor'),

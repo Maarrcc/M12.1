@@ -25,7 +25,8 @@ class AuthController
         $result = $this->usuariModel->login($username, $password);
 
         if ($result['success']) {
-            $_SESSION['user'] = $username;
+            // Almacenar el array completo del usuario (incluyendo 'rol')
+            $_SESSION['user'] = $result['user'];
             header('Location: /M12.1/my-app/public/index.php?controller=horari&action=index');
             exit;
         } else {

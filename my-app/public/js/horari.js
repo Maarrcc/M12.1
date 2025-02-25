@@ -63,7 +63,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Modificar la función actualitzaHorari
+
+/**
+ * Actualiza la taula d'horaris amb les dades de l'horari base i
+ * els canvis corresponents a una setmana i un curs.
+ *
+ * @param {Object} datesSetmana objecte amb les dates d'inici i fi
+ *                              de la setmana en format ISO
+ * @param {string} [cursComplet] Identificador de curs (format:
+ *                              "DAW-Primer")
+ */
 function actualitzaHorari(datesSetmana, cursComplet) {
   const tbody = document.querySelector("#horari tbody");
 
@@ -167,6 +176,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // Hacer que la función esté accesible globalmente para el botón
 window.actualitzaHorari = actualitzaHorari;
 
+/**
+ * Carrega les dades del horari des de l'API PHP.
+ * @param {string} start Data d'inici del període.
+ * @param {string} end Data de fi del període.
+ * @param {string} cursComplet Nom del curs amb format "DAW-Primer".
+ * @return {Promise<Object>} Dades del horari.
+ * @throws {Error} Si hi ha algun error en la càrrega.
+ */
 async function carregarDades(start, end, cursComplet) {
   try {
     const response = await fetch(

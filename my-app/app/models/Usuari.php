@@ -11,7 +11,7 @@ class Usuari
 
     public function login($username, $password)
     {
-        $sql = "SELECT id_usuari, contrasenya FROM usuaris WHERE nom_usuari = ?";
+        $sql = "SELECT id_usuari, contrasenya, rol FROM usuaris WHERE nom_usuari = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
