@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="ca">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="/M12.1/my-app/public/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="/M12.1/my-app/public/css/navbar.css" />
     <title>Horari Interactiu</title>
 </head>
-
 <body>
+<nav class="nav-container">
+        <div class="nav-menu">
+            <a href="#" class="nav-logo">EduPlanner</a>
+            <ul class="nav-links">
+                <li><a href="/M12.1/my-app/public/index.php?controller=horari&action=index">Inici</a></li>
+                <?php if (isset($_SESSION['user']) && $_SESSION['user']['rol'] === 'admin'): ?>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">Administrar</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/M12.1/my-app/public/index.php?controller=alumnes&action=assign">Assignar Alumne</a></li>
+                            <li><a href="/M12.1/my-app/public/index.php?controller=assignatures&action=create">Nova Assignatura</a></li>
+                            <li><a href="/M12.1/my-app/public/index.php?controller=aula&action=create">Nova Aula</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+                <li><a href="#" class="nav-button">Contacte</a></li>
+            </ul>
+        </div>
+    </nav>
     <div class="container">
         <h1>Horari</h1>
         <div class="controls">
@@ -31,9 +49,9 @@
                 </select>
             </div>
             <div class="selector-setmana">
-                <button id="setmanaAnterior">&lt;</button>
+                <button id="setmanaAnterior"><</button>
                 <span id="setmanaActual"></span>
-                <button id="setmanaSeguent">&gt;</button>
+                <button id="setmanaSeguent">></button>
             </div>
         </div>
         <table id="horari">
@@ -54,5 +72,4 @@
     <script src="/M12.1/my-app/public/js/dates.js"></script>
     <script src="/M12.1/my-app/public/js/cursos.js"></script>
 </body>
-
 </html>

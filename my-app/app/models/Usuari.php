@@ -48,4 +48,13 @@ class Usuari
             return ['success' => false, 'message' => 'Error al crear l\'usuari: ' . $e->getMessage()];
         }
     }
+
+    public function getUsuarisNoAlumnes()
+    {
+        $sql = "SELECT u.* FROM Usuaris u 
+                LEFT JOIN Alumnes a ON u.id_usuari = a.id_usuari 
+                WHERE a.id_alumne IS NULL AND u.rol = 'alumne'";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

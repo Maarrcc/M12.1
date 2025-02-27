@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <title>Assignar Alumne</title>
+    <link rel="stylesheet" href="/M12.1/my-app/public/css/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Assignar Usuari com Alumne</h2>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="error-message">
+                <?php 
+                    echo htmlspecialchars($_SESSION['error']);
+                    unset($_SESSION['error']);
+                ?>
+            </div>
+        <?php endif; ?>
+        <form action="/M12.1/my-app/public/index.php?controller=alumnes&action=store" method="POST">
+            <div class="form-group">
+                <label for="id_usuari">Usuari:</label>
+                <select name="id_usuari" id="id_usuari" required>
+                    <?php foreach ($usuaris as $usuari): ?>
+                        <option value="<?php echo $usuari['id_usuari']; ?>">
+                            <?php echo htmlspecialchars($usuari['nom'] . ' (' . $usuari['nom_usuari'] . ')'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="id_curs">Curs:</label>
+                <select name="id_curs" id="id_curs" required>
+                    <?php foreach ($cursos as $curs): ?>
+                        <option value="<?php echo $curs['id_curs']; ?>">
+                            <?php echo htmlspecialchars($curs['nom_cicle'] . ' - ' . $curs['any_academic']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="btn-login">Assignar Alumne</button>
+        </form>
+    </div>
+</body>
+</html>

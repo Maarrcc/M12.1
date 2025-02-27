@@ -1,13 +1,16 @@
 <?php
 
-class Aula {
+class Aula
+{
     private $pdo;
 
-    public function __construct($pdo) {
+    public function __construct($pdo)
+    {
         $this->pdo = $pdo;
     }
 
-    public function create($nom_aula, $capacitat) {
+    public function create($nom_aula, $capacitat)
+    {
         $sql = "INSERT INTO Aulas (nom_aula, capacitat) VALUES (:nom_aula, :capacitat)";
         $stmt = $this->pdo->prepare($sql);
 
@@ -17,7 +20,8 @@ class Aula {
         ]);
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         $stmt = $this->pdo->query("SELECT * FROM Aulas");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

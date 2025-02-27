@@ -1,0 +1,219 @@
+:root {
+  /* Colores base */
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --accent-color: #e74c3c;
+  --background-color: #ecf0f1;
+  --text-color: #2c3e50;
+
+  /* Colores módulos */
+  --color-m6: #ffb6c1;
+  --color-m7: #98fb98;
+  --color-m8: #87cefa;
+  --color-m9: #dda0dd;
+  --color-m12: #f0e68c;
+
+  /* Colores estados */
+  --color-cambio: #fff3cd;
+  --color-cambio-borde: #ffeeba;
+  --color-error: #fee;
+  --color-error-borde: #faa;
+
+  /* Espaciado */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+
+  /* Bordes */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+}
+.nav-container {
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-menu {
+  width: min(90%, 1200px);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  height: 60px;
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: var(--spacing-md);
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  position: relative;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transition: all 0.3s ease;
+  border-radius: var(--border-radius-sm);
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  color: var(--secondary-color);
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* Línea inferior animada */
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: var(--accent-color);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-links a:hover::after {
+  width: 60%;
+}
+
+/* Botón especial */
+.nav-button {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover {
+  background-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Estils per al desplegable */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius-md);
+  list-style: none;
+  padding: var(--spacing-xs) 0;
+  margin: 0;
+  z-index: 1000;
+}
+
+.dropdown-menu li {
+  position: relative;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.dropdown-menu a:hover {
+  color: var(--secondary-color);
+  background-color: rgba(52, 152, 219, 0.1);
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* Media Queries mejorados */
+@media (max-width: 768px) {
+  .nav-menu {
+    padding: var(--spacing-sm) var(--spacing-md);
+    justify-content: space-between;
+  }
+
+  .nav-links {
+    gap: var(--spacing-sm);
+  }
+
+  .nav-links a {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.9rem;
+  }
+
+  .nav-logo {
+    font-size: 1.2rem;
+  }
+
+  .nav-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .dropdown-menu {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-links a {
+    font-size: 0.85rem;
+    padding: var(--spacing-xs);
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+  }
+
+  .nav-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .nav-links {
+    gap: var(--spacing-xs);
+  }
+
+  .dropdown-menu {
+    min-width: 160px;
+  }
+
+  .dropdown-menu a {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+}

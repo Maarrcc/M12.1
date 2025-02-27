@@ -28,14 +28,15 @@ require_once '../app/models/Assignatura.php';
 require_once '../app/models/Horari.php';
 require_once '../app/models/Usuari.php';
 require_once '../app/models/Aula.php';  
-// ... otros modelos
+require_once '../app/models/Alumnes.php';
+require_once '../app/models/Curs.php';
 
 // Cargar los controladores
 require_once '../app/controllers/AssignaturesController.php';
 require_once '../app/controllers/HorariController.php';
 require_once '../app/controllers/AuthController.php';
 require_once '../app/controllers/AulaController.php';
-// ... otros controladores
+require_once '../app/controllers/AlumnesController.php';
 
 // Obtener el controlador y la acción de la URL
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'auth';
