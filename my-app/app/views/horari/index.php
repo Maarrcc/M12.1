@@ -20,6 +20,7 @@
                             <li><a href="/M12.1/my-app/public/index.php?controller=alumnes&action=assign">Assignar Alumne</a></li>
                             <li><a href="/M12.1/my-app/public/index.php?controller=assignatures&action=create">Nova Assignatura</a></li>
                             <li><a href="/M12.1/my-app/public/index.php?controller=aula&action=create">Nova Aula</a></li>
+                            <li><a href="/M12.1/my-app/public/index.php?controller=professor&action=new">Nou Professor</a></li>
                             <li><a href="/M12.1/my-app/public/index.php?controller=professor&action=assign">Assignar Professor</a></li>
                             <li><a href="/M12.1/my-app/public/index.php?controller=canvi&action=create">Registrar Canvi</a></li>
                         </ul>

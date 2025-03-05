@@ -57,4 +57,13 @@ class Usuari
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getUsuarisNoProfessors()
+    {
+        $sql = "SELECT u.* FROM Usuaris u 
+                LEFT JOIN Professors p ON u.id_usuari = p.id_usuari 
+                WHERE p.id_professor IS NULL AND u.rol = 'professor'";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

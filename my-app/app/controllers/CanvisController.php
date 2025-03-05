@@ -21,6 +21,7 @@ class CanviController {
 
         $professors = $this->canviModel->getProfessors();
         $aules = $this->canviModel->getAules();
+        $cursos = $this->canviModel->getCursosDisponibles();
         
         require_once '../app/views/canvis/create.php';
     }
@@ -80,5 +81,34 @@ class CanviController {
         $horaris = $this->canviModel->getHorarisByDia($dia);
         echo json_encode(['horaris' => $horaris]);
         exit;
+    }
+
+    public function getHorarisByCurs() {
+        if (!isset($_GET['curs']) || !isset($_GET['dia'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Falten paràmetres']);
+            return;
+        }
+
+        $idCurs = $_GET['curs'];
+        $dia = $_GET['dia'];
+        
+        try {
+            // Usar canviModel
+            $horaris = $this->canviModel->getHorarisByCurs($idCurs);
+            
+            // Filtrar por día si se especifica
+            if ($dia) {
+                $horaris = array_filter($horaris, function($horari) use ($dia) {
+                    return $horari['dia'] === $dia;
+                });
+            }
+            
+            header('Content-Type: application/json');
+            echo json_encode(array_values($horaris));
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
 }

@@ -43,4 +43,22 @@ class Professor {
             throw new Exception("Error al asignar el profesor: " . $e->getMessage());
         }
     }
+
+    public function assignUsuariToProfessor($id_usuari) {
+        try {
+            // Verificar que el usuario no sea ya un profesor
+            $stmt = $this->pdo->prepare("SELECT id_professor FROM Professors WHERE id_usuari = ?");
+            $stmt->execute([$id_usuari]);
+            if ($stmt->fetch()) {
+                throw new Exception("Aquest usuari ja és un professor");
+            }
+
+            // Insertar nuevo profesor
+            $sql = "INSERT INTO Professors (id_usuari) VALUES (?)";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$id_usuari]);
+        } catch (PDOException $e) {
+            throw new Exception("Error al crear el professor: " . $e->getMessage());
+        }
+    }
 }

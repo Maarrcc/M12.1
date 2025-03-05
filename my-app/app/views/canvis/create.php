@@ -22,9 +22,21 @@
 
         <form action="/M12.1/my-app/public/index.php?controller=canvi&action=store" method="POST">
             <div class="form-group">
+                <label for="selector-curs">Curs:</label>
+                <select id="selector-curs" name="selector-curs" required>
+                    <option value="">Selecciona un curs</option>
+                    <?php foreach ($cursos as $curs): ?>
+                        <option value="<?php echo htmlspecialchars($curs['id_curs']); ?>">
+                            <?php echo htmlspecialchars($curs['nom_complet']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="dia">Dia de la setmana:</label>
                 <select name="dia" id="dia" required>
-                    <option value="">Selecciona un dia</option>
+                    <option value="">Primer selecciona un curs</option>
                     <option value="Dilluns">Dilluns</option>
                     <option value="Dimarts">Dimarts</option>
                     <option value="Dimecres">Dimecres</option>
