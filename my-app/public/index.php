@@ -41,6 +41,7 @@ require_once '../app/controllers/AulaController.php';
 require_once '../app/controllers/AlumnesController.php';
 require_once '../app/controllers/ProfessorController.php';
 require_once '../app/controllers/CanvisController.php';
+require_once '../app/controllers/ImportController.php';
 
 // Obtener el controlador y la acción de la URL
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'auth';

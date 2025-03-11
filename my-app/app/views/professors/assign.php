@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <title>Assignar Professor</title>
     <link rel="stylesheet" href="/M12.1/my-app/public/css/login.css">
 </head>
+
 <body>
+    <?php include_once __DIR__ . '/../templates/navbar.php'; ?>
     <div class="login-container">
         <h2>Assignar Professor a Assignatura</h2>
         <?php if (isset($_SESSION['error'])): ?>
             <div class="error-message">
-                <?php 
-                    echo htmlspecialchars($_SESSION['error']);
-                    unset($_SESSION['error']);
+                <?php
+                echo htmlspecialchars($_SESSION['error']);
+                unset($_SESSION['error']);
                 ?>
             </div>
         <?php endif; ?>
-        
+
         <form action="/M12.1/my-app/public/index.php?controller=professor&action=store" method="POST">
             <div class="form-group">
                 <label for="id_professor">Professor:</label>
@@ -46,4 +49,5 @@
         </form>
     </div>
 </body>
+
 </html>
