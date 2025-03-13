@@ -122,41 +122,28 @@ class Canvi {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function obtenerDetallesCambio($idHorari) {
+    public function obtenerDetallesCambio($idHorari, $idAulaSubstituta = null, $idProfessorSubstitut = null) {
         $sql = "SELECT 
-                    CONCAT(c.nom_cicle, ' ', c.any_academic) as curs,
-                    a.nom as assignatura,
-                    CONCAT(u.nom, ' ', u.nom_usuari) as professor
-                FROM Horari h
-                JOIN Cursos c ON h.id_curs = c.id_curs
-                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                JOIN Professors p ON h.id_professor = p.id_professor
-                JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                WHERE h.id_horari = ?";
-                
-        try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$idHorari]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-            
-            if (!$result) {
-                // Si no hay resultados, devolver un array con valores por defecto
-                return [
-                    'curs' => 'No disponible',
-                    'assignatura' => 'No disponible',
-                    'professor' => 'No disponible'
-                ];
-            }
-            
-            return $result;
-        } catch (PDOException $e) {
-            // En caso de error, registrar el error pero devolver datos por defecto
-            error_log("Error en obtenerDetallesCambio: " . $e->getMessage());
-            return [
-                'curs' => 'Error al obtener datos',
-                'assignatura' => 'Error al obtener datos',
-                'professor' => 'Error al obtener datos'
-            ];
-        }
+            h.id_horari,
+            CONCAT(c.nom_cicle, ' ', c.any_academic) as curs,
+            a.nom as assignatura,
+            u.nom as professor,
+            au.nom_aula as aula_original,
+            (SELECT nom_aula FROM Aulas WHERE id_aula = ?) as aula_substituta,
+            (SELECT u2.nom 
+             FROM Professors p2 
+             JOIN Usuaris u2 ON p2.id_usuari = u2.id_usuari 
+             WHERE p2.id_professor = ?) as professor_substitut
+            FROM Horari h
+            JOIN Cursos c ON h.id_curs = c.id_curs
+            JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
+            JOIN Professors p ON h.id_professor = p.id_professor
+            JOIN Usuaris u ON p.id_usuari = u.id_usuari
+            JOIN Aulas au ON h.id_aula = au.id_aula
+            WHERE h.id_horari = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$idAulaSubstituta, $idProfessorSubstitut, $idHorari]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }

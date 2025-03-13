@@ -92,23 +92,39 @@ class CanvisController
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
-            $detallesCambio = $this->canviModel->obtenerDetallesCambio($data['id_horari']);
+            $detallesCambio = $this->canviModel->obtenerDetallesCambio(
+                $data['id_horari'],
+                $data['id_aula_substituta'],
+                $data['id_professor_substitut']
+            );
 
             $mail->setFrom('horari@tudominio.com', 'Sistema de Horarios');
             $mail->addAddress('marcalvero@insestatut.cat');
 
             $mail->isHTML(true);
-            $mail->Subject = 'Nuevo cambio en el horario - ' . $data['tipus_canvi'];
+            $mail->Subject = 'Nou canvi en l\'horari - ' . $data['tipus_canvi'];
             
             $bodyHtml = "
-                <h2>Se ha registrado un nuevo cambio en el horario</h2>
-                <p><strong>Tipo de cambio:</strong> {$data['tipus_canvi']}</p>
-                <p><strong>Fecha:</strong> {$data['data_canvi']}</p>
-                <p><strong>Descripción:</strong> {$data['descripcio_canvi']}</p>
-                <p><strong>Curso:</strong> {$detallesCambio['curs']}</p>
-                <p><strong>Asignatura:</strong> {$detallesCambio['assignatura']}</p>
-                <p><strong>Profesor:</strong> {$detallesCambio['professor']}</p>
-            ";
+                <h2>S'ha registrat un nou canvi en l'horari</h2>
+                <p><strong>Tipus de canvi:</strong> {$data['tipus_canvi']}</p>
+                <p><strong>Data:</strong> {$data['data_canvi']}</p>
+                <p><strong>Descripció:</strong> {$data['descripcio_canvi']}</p>
+                <p><strong>Curs:</strong> {$detallesCambio['curs']}</p>
+                <p><strong>Assignatura:</strong> {$detallesCambio['assignatura']}</p>
+                <p><strong>Professor:</strong> {$detallesCambio['professor']}</p>";
+
+            // Modificamos esta parte para el aula sustituta
+            if ($data['tipus_canvi'] === 'Canvi aula' && $data['id_aula_substituta']) {
+                $bodyHtml .= "
+                <p><strong>Aula Original:</strong> {$detallesCambio['aula_original']}</p>
+                <p><strong>Aula Substituta:</strong> {$detallesCambio['aula_substituta']}</p>";
+            }
+
+            // Modificamos esta parte para el profesor sustituto
+            if ($data['tipus_canvi'] === 'Canvi professor' && $data['id_professor_substitut']) {
+                $bodyHtml .= "
+                <p><strong>Professor Substitut:</strong> {$detallesCambio['professor_substitut']}</p>";
+            }
 
             $mail->Body = $bodyHtml;
             $mail->AltBody = strip_tags($bodyHtml);
