@@ -50,6 +50,9 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'login';
 // Construir el nombre de la clase del controlador
 $controllerName = ucfirst($controller) . 'Controller';
 
+// Debug
+error_log("Intentando cargar controlador: " . $controllerName);
+
 try {
     if (class_exists($controllerName)) {
         $controller = new $controllerName($pdo);

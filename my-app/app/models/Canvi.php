@@ -121,4 +121,42 @@ class Canvi {
         $stmt->execute([$idCurs]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function obtenerDetallesCambio($idHorari) {
+        $sql = "SELECT 
+                    CONCAT(c.nom_cicle, ' ', c.any_academic) as curs,
+                    a.nom as assignatura,
+                    CONCAT(u.nom, ' ', u.nom_usuari) as professor
+                FROM Horari h
+                JOIN Cursos c ON h.id_curs = c.id_curs
+                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN Professors p ON h.id_professor = p.id_professor
+                JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                WHERE h.id_horari = ?";
+                
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$idHorari]);
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            
+            if (!$result) {
+                // Si no hay resultados, devolver un array con valores por defecto
+                return [
+                    'curs' => 'No disponible',
+                    'assignatura' => 'No disponible',
+                    'professor' => 'No disponible'
+                ];
+            }
+            
+            return $result;
+        } catch (PDOException $e) {
+            // En caso de error, registrar el error pero devolver datos por defecto
+            error_log("Error en obtenerDetallesCambio: " . $e->getMessage());
+            return [
+                'curs' => 'Error al obtener datos',
+                'assignatura' => 'Error al obtener datos',
+                'professor' => 'Error al obtener datos'
+            ];
+        }
+    }
 }

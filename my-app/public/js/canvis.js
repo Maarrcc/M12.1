@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const cursSelect = document.getElementById('selector-curs');
     const diaSelect = document.getElementById('dia');
     const idHorariSelect = document.getElementById('id_horari');
-    const cursSelect = document.getElementById('selector-curs');
     const horariSelector = document.getElementById('horari_selector');
     const idCursInput = document.getElementById('id_curs');
     const tipusCanviSelect = document.getElementById('tipus_canvi');
     const professorGroup = document.getElementById('professor_group');
     const aulaGroup = document.getElementById('aula_group');
-    
-    // Campos a deshabilitar inicialmente
+
+    // Deshabilitar campos inicialmente
     const formElements = [
         diaSelect,
         idHorariSelect,
-        document.getElementById('tipus_canvi'),
+        tipusCanviSelect,
         document.getElementById('data_canvi'),
         document.getElementById('data_fi'),
         document.getElementById('id_professor_substitut'),
@@ -20,21 +20,19 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('descripcio_canvi')
     ];
 
-    // Deshabilitar todos los campos al cargar la página
     formElements.forEach(element => {
         if (element) {
             element.disabled = true;
         }
     });
 
-    // Cuando cambia el curso
+    // Event listener para cambio de curso
     cursSelect.addEventListener('change', function() {
         const cursId = this.value;
-        diaSelect.value = ''; // Reset día
+        diaSelect.value = '';
         idHorariSelect.innerHTML = '<option value="">Primer selecciona un dia</option>';
         horariSelector.style.display = 'none';
         
-        // Habilitar/deshabilitar campos según si hay curso seleccionado
         formElements.forEach(element => {
             if (element) {
                 element.disabled = !cursId;
@@ -43,11 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (cursId) {
             idCursInput.value = cursId;
-            diaSelect.disabled = false; // Habilitar selector de día
+            diaSelect.disabled = false;
         }
     });
 
-    // Cuando cambia el día
+    // Event listener para cambio de día
     diaSelect.addEventListener('change', function() {
         const dia = this.value;
         const cursId = cursSelect.value;
@@ -59,8 +57,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (dia) {
-            fetch(`/M12.1/my-app/public/index.php?controller=canvi&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`)
-                .then(response => response.json())
+            fetch(`/M12.1/my-app/public/index.php?controller=canvis&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
                 .then(horaris => {
                     idHorariSelect.innerHTML = '<option value="">Selecciona un horari</option>';
                     horaris.forEach(horari => {
@@ -79,28 +82,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    idHorariSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        idCursInput.value = selectedOption.dataset.idCurs;
-    });
-
+    // Gestionar campos según tipo de cambio
     tipusCanviSelect.addEventListener('change', function() {
         const tipusCanvi = this.value;
         
-        professorGroup.classList.remove('disabled');
-        aulaGroup.classList.remove('disabled');
+        // Mostrar todos los campos primero
+        professorGroup.style.display = 'block';
+        aulaGroup.style.display = 'block';
         
+        // Ocultar según el tipo
         switch(tipusCanvi) {
             case 'Absència professor':
             case 'Canvi professor':
-                aulaGroup.classList.add('disabled');
+                aulaGroup.style.display = 'none';
                 break;
             case 'Canvi aula':
-                professorGroup.classList.add('disabled');
+                professorGroup.style.display = 'none';
                 break;
             case 'Classe cancelada':
-                professorGroup.classList.add('disabled');
-                aulaGroup.classList.add('disabled');
+                professorGroup.style.display = 'none';
+                aulaGroup.style.display = 'none';
                 break;
         }
     });

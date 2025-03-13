@@ -1,41 +1,42 @@
 <?php
 
-require_once '../app/models/Canvi.php';
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
-class CanviController {
+class CanvisController 
+{
     private $canviModel;
+    private $pdo;
 
-    public function __construct($pdo) {
+    public function __construct($pdo) 
+    {
         if (!isset($_SESSION)) {
             session_start();
         }
+        $this->pdo = $pdo;
         $this->canviModel = new Canvi($pdo);
     }
 
     public function create() {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
-            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
-            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
+        try {
+            // Obtener los datos necesarios para el formulario
+            $cursos = $this->canviModel->getCursosDisponibles();
+            $professors = $this->canviModel->getProfessors();
+            $aules = $this->canviModel->getAules();
+            
+            // Pasar los datos a la vista
+            require_once '../app/views/canvis/create.php';
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al cargar el formulario: ' . $e->getMessage();
+            header('Location: /M12.1/my-app/public/index.php?controller=horari&action=index');
             exit;
         }
-
-        $professors = $this->canviModel->getProfessors();
-        $aules = $this->canviModel->getAules();
-        $cursos = $this->canviModel->getCursosDisponibles();
-        
-        require_once '../app/views/canvis/create.php';
     }
 
     public function store() {
-        if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
-            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
-            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
-            exit;
-        }
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                if (empty($_POST['id_curs'])) {
+                if (empty($_POST['id_horari'])) {
                     throw new Exception("Es necesario seleccionar un horario");
                 }
 
@@ -44,25 +45,79 @@ class CanviController {
                     'id_curs' => $_POST['id_curs'],
                     'tipus_canvi' => $_POST['tipus_canvi'],
                     'data_canvi' => $_POST['data_canvi'],
-                    'data_fi' => $_POST['data_fi'] ?? null,
-                    'id_professor_substitut' => $_POST['id_professor_substitut'] ?? null,
-                    'id_aula_substituta' => $_POST['id_aula_substituta'] ?? null,
+                    'data_fi' => $_POST['data_fi'],
+                    'estat' => 'actiu',
+                    'id_professor_substitut' => !empty($_POST['id_professor_substitut']) ? $_POST['id_professor_substitut'] : null,
+                    'id_aula_substituta' => !empty($_POST['id_aula_substituta']) ? $_POST['id_aula_substituta'] : null,
                     'descripcio_canvi' => $_POST['descripcio_canvi']
                 ];
 
                 $result = $this->canviModel->insertCanvi($data);
                 
                 if ($result) {
-                    $_SESSION['success'] = 'Cambio registrado correctamente';
+                    // Solo intentar enviar el correo si la inserción fue exitosa
+                    $mailSent = $this->enviarNotificacionCambio($data);
+                    
+                    $_SESSION['success'] = $mailSent ? 
+                        'Cambio registrado y notificación enviada correctamente' : 
+                        'Cambio registrado correctamente (no se pudo enviar la notificación)';
+                    
                     header('Location: /M12.1/my-app/public/index.php?controller=horari&action=index');
-                } else {
-                    throw new Exception("Error al registrar el cambio");
+                    exit;
                 }
+
             } catch (Exception $e) {
-                $_SESSION['error'] = $e->getMessage();
-                header('Location: /M12.1/my-app/public/index.php?controller=canvi&action=create');
+                $_SESSION['error'] = 'Error al registrar el cambio: ' . $e->getMessage();
+                header('Location: /M12.1/my-app/public/index.php?controller=canvis&action=create');
+                exit;
             }
-            exit;
+        }
+        
+        // Si no es POST, redirigir al formulario
+        header('Location: /M12.1/my-app/public/index.php?controller=canvis&action=create');
+        exit;
+    }
+
+    private function enviarNotificacionCambio($data) {
+        require_once '../vendor/autoload.php';
+
+        $mail = new PHPMailer(true);
+
+        try {
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'marcalvero@insestatut.cat';
+            $mail->Password = 'ma_29942994';
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+
+            $detallesCambio = $this->canviModel->obtenerDetallesCambio($data['id_horari']);
+
+            $mail->setFrom('horari@tudominio.com', 'Sistema de Horarios');
+            $mail->addAddress('marcalvero@insestatut.cat');
+
+            $mail->isHTML(true);
+            $mail->Subject = 'Nuevo cambio en el horario - ' . $data['tipus_canvi'];
+            
+            $bodyHtml = "
+                <h2>Se ha registrado un nuevo cambio en el horario</h2>
+                <p><strong>Tipo de cambio:</strong> {$data['tipus_canvi']}</p>
+                <p><strong>Fecha:</strong> {$data['data_canvi']}</p>
+                <p><strong>Descripción:</strong> {$data['descripcio_canvi']}</p>
+                <p><strong>Curso:</strong> {$detallesCambio['curs']}</p>
+                <p><strong>Asignatura:</strong> {$detallesCambio['assignatura']}</p>
+                <p><strong>Profesor:</strong> {$detallesCambio['professor']}</p>
+            ";
+
+            $mail->Body = $bodyHtml;
+            $mail->AltBody = strip_tags($bodyHtml);
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log("Error al enviar correo: {$mail->ErrorInfo}");
+            return false;
         }
     }
 
@@ -86,15 +141,14 @@ class CanviController {
     public function getHorarisByCurs() {
         if (!isset($_GET['curs']) || !isset($_GET['dia'])) {
             http_response_code(400);
-            echo json_encode(['error' => 'Falten paràmetres']);
+            echo json_encode(['error' => 'Faltan parámetros requeridos']);
             return;
         }
 
         $idCurs = $_GET['curs'];
         $dia = $_GET['dia'];
-        
+
         try {
-            // Usar canviModel
             $horaris = $this->canviModel->getHorarisByCurs($idCurs);
             
             // Filtrar por día si se especifica
@@ -103,7 +157,7 @@ class CanviController {
                     return $horari['dia'] === $dia;
                 });
             }
-            
+
             header('Content-Type: application/json');
             echo json_encode(array_values($horaris));
         } catch (Exception $e) {

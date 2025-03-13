@@ -54,6 +54,7 @@
 
         <div class="help-text">
             <h3>Format dels arxius CSV:</h3>
+            <strong>Cal afegir capçalera</strong>
             <p><strong>Usuaris:</strong><br>
                 nom_usuari,nom,email,contrasenya,rol</p>
 

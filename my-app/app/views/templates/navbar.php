@@ -12,8 +12,8 @@
                         <li><a href="/M12.1/my-app/public/index.php?controller=aula&action=create">Nova Aula</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=professor&action=new">Nou Professor</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=professor&action=assign">Assignar Professor</a></li>
-                        <li><a href="/M12.1/my-app/public/index.php?controller=canvi&action=create">Registrar Canvi</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=import&action=index">Importar Usuaris</a></li>
+                        <li><a href="/M12.1/my-app/public/index.php?controller=canvis&action=create">Registrar Canvi</a></li>
                     </ul>
                 </li>
             <?php endif; ?>
