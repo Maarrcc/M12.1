@@ -3,12 +3,12 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-class CanvisController 
+class CanvisController
 {
     private $canviModel;
     private $pdo;
 
-    public function __construct($pdo) 
+    public function __construct($pdo)
     {
         if (!isset($_SESSION)) {
             session_start();
@@ -17,13 +17,14 @@ class CanvisController
         $this->canviModel = new Canvi($pdo);
     }
 
-    public function create() {
+    public function create()
+    {
         try {
             // Obtener los datos necesarios para el formulario
             $cursos = $this->canviModel->getCursosDisponibles();
             $professors = $this->canviModel->getProfessors();
             $aules = $this->canviModel->getAules();
-            
+
             // Pasar los datos a la vista
             require_once '../app/views/canvis/create.php';
         } catch (Exception $e) {
@@ -33,7 +34,8 @@ class CanvisController
         }
     }
 
-    public function store() {
+    public function store()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 if (empty($_POST['id_horari'])) {
@@ -53,15 +55,15 @@ class CanvisController
                 ];
 
                 $result = $this->canviModel->insertCanvi($data);
-                
+
                 if ($result) {
                     // Solo intentar enviar el correo si la inserción fue exitosa
                     $mailSent = $this->enviarNotificacionCambio($data);
-                    
-                    $_SESSION['success'] = $mailSent ? 
-                        'Cambio registrado y notificación enviada correctamente' : 
+
+                    $_SESSION['success'] = $mailSent ?
+                        'Cambio registrado y notificación enviada correctamente' :
                         'Cambio registrado correctamente (no se pudo enviar la notificación)';
-                    
+
                     header('Location: /M12.1/my-app/public/index.php?controller=horari&action=index');
                     exit;
                 }
@@ -72,13 +74,14 @@ class CanvisController
                 exit;
             }
         }
-        
+
         // Si no es POST, redirigir al formulario
         header('Location: /M12.1/my-app/public/index.php?controller=canvis&action=create');
         exit;
     }
 
-    private function enviarNotificacionCambio($data) {
+    private function enviarNotificacionCambio($data)
+    {
         require_once '../vendor/autoload.php';
 
         $mail = new PHPMailer(true);
@@ -88,7 +91,7 @@ class CanvisController
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'marcalvero@insestatut.cat';
-            $mail->Password = 'ma_29942994';
+            $mail->Password = 'ma_29942994'; // NOTA: Usar variable de entorno a ser posible
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
@@ -103,28 +106,49 @@ class CanvisController
 
             $mail->isHTML(true);
             $mail->Subject = 'Nou canvi en l\'horari - ' . $data['tipus_canvi'];
-            
-            $bodyHtml = "
-                <h2>S'ha registrat un nou canvi en l'horari</h2>
-                <p><strong>Tipus de canvi:</strong> {$data['tipus_canvi']}</p>
-                <p><strong>Data:</strong> {$data['data_canvi']}</p>
-                <p><strong>Descripció:</strong> {$data['descripcio_canvi']}</p>
-                <p><strong>Curs:</strong> {$detallesCambio['curs']}</p>
-                <p><strong>Assignatura:</strong> {$detallesCambio['assignatura']}</p>
-                <p><strong>Professor:</strong> {$detallesCambio['professor']}</p>";
 
-            // Modificamos esta parte para el aula sustituta
+            $bodyHtml = '
+            <html>
+            <head>
+                <style>
+                    body { font-family: Arial, sans-serif; color: #333; }
+                    .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+                    h2 { color: #2c3e50; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    .highlight { color: #e74c3c; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h2>S\'ha registrat un nou canvi en l\'horari</h2>
+                    <table>
+                        <tr><th>Tipus de canvi</th><td>' . htmlspecialchars($data['tipus_canvi']) . '</td></tr>
+                        <tr><th>Data d\'inici</th><td>' . htmlspecialchars($data['data_canvi']) . '</td></tr>
+                        <tr><th>Data de fi</th><td>' . ($data['data_fi'] ?: 'No especificada') . '</td></tr>
+                        <tr><th>Curs</th><td>' . htmlspecialchars($detallesCambio['curs']) . '</td></tr>
+                        <tr><th>Assignatura</th><td>' . htmlspecialchars($detallesCambio['assignatura']) . '</td></tr>
+                        <tr><th>Professor</th><td>' . htmlspecialchars($detallesCambio['professor']) . '</td></tr>';
+
             if ($data['tipus_canvi'] === 'Canvi aula' && $data['id_aula_substituta']) {
-                $bodyHtml .= "
-                <p><strong>Aula Original:</strong> {$detallesCambio['aula_original']}</p>
-                <p><strong>Aula Substituta:</strong> {$detallesCambio['aula_substituta']}</p>";
+                $bodyHtml .= '
+                        <tr><th>Aula Original</th><td>' . htmlspecialchars($detallesCambio['aula_original']) . '</td></tr>
+                        <tr><th>Aula Substituta</th><td class="highlight">' . htmlspecialchars($detallesCambio['aula_substituta']) . '</td></tr>';
             }
 
-            // Modificamos esta parte para el profesor sustituto
             if ($data['tipus_canvi'] === 'Canvi professor' && $data['id_professor_substitut']) {
-                $bodyHtml .= "
-                <p><strong>Professor Substitut:</strong> {$detallesCambio['professor_substitut']}</p>";
+                $bodyHtml .= '
+                        <tr><th>Professor Substitut</th><td class="highlight">' . htmlspecialchars($detallesCambio['professor_substitut']) . '</td></tr>';
             }
+
+            $bodyHtml .= '
+                        <tr><th>Descripció</th><td>' . htmlspecialchars($data['descripcio_canvi']) . '</td></tr>
+                    </table>
+                    <p style="font-size: 0.9em; color: #777;">Aquest missatge és automàtic, no cal que hi responguis.</p>
+                </div>
+            </body>
+            </html>';
 
             $mail->Body = $bodyHtml;
             $mail->AltBody = strip_tags($bodyHtml);
@@ -136,8 +160,8 @@ class CanvisController
             return false;
         }
     }
-
-    public function getHorarisByDia() {
+    public function getHorarisByDia()
+    {
         if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
             echo json_encode(['error' => 'No autorizado']);
             exit;
@@ -154,7 +178,8 @@ class CanvisController
         exit;
     }
 
-    public function getHorarisByCurs() {
+    public function getHorarisByCurs()
+    {
         if (!isset($_GET['curs']) || !isset($_GET['dia'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Faltan parámetros requeridos']);
@@ -166,10 +191,10 @@ class CanvisController
 
         try {
             $horaris = $this->canviModel->getHorarisByCurs($idCurs);
-            
+
             // Filtrar por día si se especifica
             if ($dia) {
-                $horaris = array_filter($horaris, function($horari) use ($dia) {
+                $horaris = array_filter($horaris, function ($horari) use ($dia) {
                     return $horari['dia'] === $dia;
                 });
             }
