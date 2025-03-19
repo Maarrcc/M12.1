@@ -38,8 +38,15 @@ class CanvisController
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
+
                 if (empty($_POST['id_horari'])) {
                     throw new Exception("Es necesario seleccionar un horario");
+                }
+                if (empty($_POST['data_canvi'])) {
+                    throw new Exception("La fecha de cambio es obligatoria");
+                }
+                if (empty($_POST['tipus_canvi'])) {
+                    throw new Exception("El tipo de cambio es obligatorio");
                 }
 
                 $data = [
@@ -88,10 +95,10 @@ class CanvisController
 
         try {
             $mail->isSMTP();
-            $mail->Host = 'smtp.gmail.com';
+            $mail->Host = 'smtp.dondominio.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'marcalvero@insestatut.cat';
-            $mail->Password = 'ma_29942994'; // NOTA: Usar variable de entorno a ser posible
+            $mail->Username = 'info@racogamer.cat';
+            $mail->Password = 'MarcAlvero25-'; // NOTA: Usar variable de entorno a ser posible
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
@@ -101,7 +108,7 @@ class CanvisController
                 $data['id_professor_substitut']
             );
 
-            $mail->setFrom('horari@tudominio.com', 'Sistema de Horarios');
+            $mail->setFrom('info@racogamer.cat', 'Sistema de Horarios');
             $mail->addAddress('marcalvero@insestatut.cat');
 
             $mail->isHTML(true);

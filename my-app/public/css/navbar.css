@@ -36,11 +36,14 @@
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%; /* Asegura que el contenedor ocupe todo el ancho */
+  margin: 0; /* Elimina márgenes que puedan interferir */
+  padding: 0; /* Elimina relleno innecesario en el contenedor */
 }
 
 .nav-menu {
-  width: min(90%, 1200px);
-  margin: 0 auto;
+  width: min(100%, 1200px); /* Cambia 90% a 100% para que el contenido pueda llegar a los bordes */
+  margin: 0 auto; /* Mantiene el contenido centrado */
   display: flex;
   justify-content: space-between;
   align-items: center;
