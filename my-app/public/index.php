@@ -32,6 +32,7 @@ require_once '../app/models/Alumnes.php';
 require_once '../app/models/Curs.php';
 require_once '../app/models/Professor.php';
 require_once '../app/models/Canvi.php';
+require_once '../app/models/AssignaturesAlumnes.php';
 
 // Cargar los controladores
 require_once '../app/controllers/AssignaturesController.php';
@@ -42,6 +43,7 @@ require_once '../app/controllers/AlumnesController.php';
 require_once '../app/controllers/ProfessorController.php';
 require_once '../app/controllers/CanvisController.php';
 require_once '../app/controllers/ImportController.php';
+require_once '../app/controllers/AssignaturesAlumnesController.php';
 
 // Obtener el controlador y la acción de la URL
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'auth';
