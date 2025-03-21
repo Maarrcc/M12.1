@@ -30,7 +30,7 @@ const changeIcons = {
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  const tbody = document.querySelector("#horari tbody");
+  const grid = document.querySelector("#horari");
   const horaRanges = {
     "15:00": "16:00",
     "16:00": "17:00",
@@ -43,26 +43,24 @@ document.addEventListener("DOMContentLoaded", function () {
   const hores = Object.keys(horaRanges);
   const dies = ["dilluns", "dimarts", "dimecres", "dijous", "divendres"];
 
-  // Crear estructura de la tabla
+  // Generar la cuadrícula
   hores.forEach((hora) => {
-    const tr = document.createElement("tr");
-    const tdHora = document.createElement("td");
-    tdHora.textContent = `${hora} - ${horaRanges[hora]}`;
-    tr.appendChild(tdHora);
+    // Celda de hora
+    const horaDiv = document.createElement("div");
+    horaDiv.classList.add("hora-cell");
+    horaDiv.textContent = `${hora} - ${horaRanges[hora]}`;
+    grid.appendChild(horaDiv);
 
+    // Celdas de días
     dies.forEach((dia) => {
-      const td = document.createElement("td");
-      td.setAttribute("data-dia", dia);
-      td.setAttribute("data-hora", hora);
-      // Añadir una clase para celdas vacías
-      td.classList.add("celda-vacia");
-      tr.appendChild(td);
+      const diaDiv = document.createElement("div");
+      diaDiv.classList.add("dia-cell", "celda-vacia");
+      diaDiv.setAttribute("data-dia", dia);
+      diaDiv.setAttribute("data-hora", hora);
+      grid.appendChild(diaDiv);
     });
-
-    tbody.appendChild(tr);
   });
 });
-
 
 /**
  * Actualiza la taula d'horaris amb les dades de l'horari base i
@@ -74,7 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
  *                              "DAW-Primer")
  */
 function actualitzaHorari(datesSetmana, cursComplet) {
-  const tbody = document.querySelector("#horari tbody");
+  const grid = document.querySelector("#horari");
 
   if (!cursComplet) {
     const cicle = document.getElementById("selector-cicle")?.value || "DAW";
@@ -82,7 +80,7 @@ function actualitzaHorari(datesSetmana, cursComplet) {
     cursComplet = `${cicle}-${any}`;
   }
 
-  if (tbody) tbody.style.opacity = "0.5";
+  if (grid) grid.style.opacity = "0.5";
 
   carregarDades(
     datesSetmana.dilluns.toISOString().split("T")[0],
@@ -90,15 +88,15 @@ function actualitzaHorari(datesSetmana, cursComplet) {
     cursComplet
   )
     .then((data) => {
-      console.log("Datos recibidos:", data); // Debug
+      console.log("Datos recibidos:", data);
 
       if (!data || !data.horari || !Array.isArray(data.horari)) {
         throw new Error("Formato de datos inválido");
       }
 
-      // Limpiar tabla
-      document.querySelectorAll("td[data-dia]").forEach((cell) => {
-        cell.className = "celda-vacia";
+      // Limpiar cuadrícula
+      document.querySelectorAll(".dia-cell").forEach((cell) => {
+        cell.className = "dia-cell celda-vacia";
         cell.innerHTML = "";
       });
 
@@ -107,65 +105,62 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         const hora = item.hora_inici.slice(0, 5);
         const dia = item.dia.toLowerCase();
         const cell = document.querySelector(
-          `td[data-dia='${dia}'][data-hora='${hora}']`
+          `.dia-cell[data-dia='${dia}'][data-hora='${hora}']`
         );
 
         if (cell) {
           cell.classList.remove("celda-vacia");
-          cell.setAttribute("data-horari", item.id_horari); // Añadir id_horari
+          cell.setAttribute("data-horari", item.id_horari);
           const modulo = item.assignatura.match(/M\d+/)?.[0] || "default";
           cell.classList.add(assignaturesClasses[modulo] || "modulo-default");
 
           cell.innerHTML = `
-          <div class="classe-info">
-            <div class="classe-info-basic">
-              <div class="assignatura">${item.assignatura}</div>
-              <div class="professor">${item.professor}</div>
-              <div class="aula">Aula: ${item.aula}</div>
-            </div>
-          </div>`;
+            <div class="classe-info">
+              <div class="classe-info-basic">
+                <div class="assignatura">${item.assignatura}</div>
+                <div class="professor">${item.professor}</div>
+                <div class="aula">Aula: ${item.aula}</div>
+              </div>
+            </div>`;
         }
       });
 
       // Procesar cambios
       if (data.canvis && Array.isArray(data.canvis)) {
-        console.log("Procesando cambios:", data.canvis); // Debug
         data.canvis.forEach((canvi) => {
           const cell = document.querySelector(
-            `td[data-horari='${canvi.id_horari}']`
+            `.dia-cell[data-horari='${canvi.id_horari}']`
           );
-          console.log("Buscando celda para cambio:", canvi.id_horari, cell); // Debug
-
           if (cell) {
             cell.classList.add("cambio-horario");
             const tipoCambio = canvi.tipus_canvi;
             const tipoCambioClass = tipoCambio.toLowerCase().replace(" ", "-");
 
-            // Añadir información del cambio
             const canviInfo = document.createElement("div");
             canviInfo.className = `cambio-info cambio-${tipoCambioClass}`;
             canviInfo.innerHTML = `
-            <span class="cambio-icon">${changeIcons[tipoCambio] || ""}</span>
-            <span class="cambio-text">${canvi.descripcio_canvi}</span>
-          `;
+              <span class="cambio-icon">${
+                changeIcons[tipoCambio] || changeIcons["default"]
+              }</span>
+              <span class="cambio-text">${canvi.descripcio_canvi}</span>
+            `;
             cell.appendChild(canviInfo);
           }
         });
       }
 
-      tbody.style.opacity = "1";
+      grid.style.opacity = "1";
     })
     .catch((error) => {
       console.error("Error:", error);
-      tbody.style.opacity = "1";
+      grid.style.opacity = "1";
 
       const errorDiv = document.createElement("div");
       errorDiv.id = "error-message";
       errorDiv.textContent = "Error al cargar el horario";
-      document.querySelector(".container").prepend(errorDiv);
+      document.querySelector(".horari-container").prepend(errorDiv);
     });
 }
-
 // Asegurar que la función se llama cuando se carga la página
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();

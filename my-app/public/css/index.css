@@ -2,25 +2,37 @@
 1. Variables globales
 ====================*/
 :root {
-  /* Colores base */
+  /* Colores base - Paleta mejorada */
   --primary-color: #2c3e50;
+  --primary-light: #34495e;
+  --primary-dark: #243342;
   --secondary-color: #3498db;
+  --secondary-light: #5dade2;
+  --secondary-dark: #2980b9;
   --accent-color: #e74c3c;
-  --background-color: #ecf0f1;
+  --accent-light: #ec7063;
+  --accent-dark: #c0392b;
+  --background-color: #f5f7fa;
   --text-color: #2c3e50;
+  --text-light: #7f8c8d;
+  --border-color: #dcdde1;
 
-  /* Colores módulos */
-  --color-m6: #ffb6c1;
-  --color-m7: #98fb98;
-  --color-m8: #87cefa;
-  --color-m9: #dda0dd;
-  --color-m12: #f0e68c;
+  /* Colores módulos - Más vibrantes */
+  --color-m6: #ff6b81;
+  --color-m7: #7bed9f;
+  --color-m8: #70a1ff;
+  --color-m9: #cf6a87;
+  --color-m12: #ffa502;
 
-  /* Colores estados */
-  --color-cambio: #fff3cd;
-  --color-cambio-borde: #ffeeba;
-  --color-error: #fee;
-  --color-error-borde: #faa;
+  /* Sombras predefinidas */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.15);
+
+  /* Transiciones predefinidas */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms ease;
+  --transition-slow: 500ms ease;
 
   /* Espaciado */
   --spacing-xs: 0.5rem;
@@ -38,12 +50,11 @@
 2. Estilos base
 ====================*/
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  margin: 0;
-  padding: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
@@ -52,7 +63,15 @@ body {
   padding: var(--spacing-lg);
   background: white;
   border-radius: var(--border-radius-lg);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(10px);
+  transition: transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+.container:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 h1 {
@@ -65,58 +84,99 @@ h1 {
 }
 
 /*====================
-3. Tabla y celdas
+3. Cuadrícula del horario
 ====================*/
-table {
+.horari-container {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
   margin-top: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  table-layout: fixed; /* Fuerza ancho uniforme */
+  background: white;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
-/* Ajustar el ancho de la primera columna (horas) */
-th:first-child,
-td:first-child {
-  width: 80px; /* Ancho reducido para la columna de horas */
-  min-width: 80px;
-  font-size: 0.9em; /* Texto ligeramente más pequeño */
-  white-space: nowrap; /* Evitar saltos de línea */
+.horari-header {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr); /* 80px para horas, resto igual */
+  gap: 2px;
+  background: var(--primary-color);
+  padding: 5px;
 }
 
-/* Mantener el ancho del resto de columnas */
-td:not(:first-child) {
-  width: auto;
-  min-width: 120px;
-  height: 120px;
-}
-
-th {
-  background-color: var(--primary-color);
+.header-cell {
+  background: var(--primary-light);
   color: white;
   padding: 15px;
   font-weight: bold;
   text-transform: uppercase;
+  text-align: center;
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
 }
 
-td {
-  padding: 20px;
+.header-cell:hover {
+  background: var(--primary-dark);
+}
+
+.hora-label {
+  /* Celda vacía en la esquina superior izquierda */
+  background-color: var(--primary-color);
+}
+
+.horari-grid {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr); /* Igual que el header */
+  gap: 2px;
+  padding: 5px;
+  background: var(--border-color);
+}
+
+.hora-cell {
+  width: 80px;
+  min-width: 80px;
+  font-size: 0.9em;
+  padding: 10px;
   border: 1px solid #ddd;
-  height: 180px; /* Altura aumentada */
-  width: 180px; /* Ancho aumentado */
+  font-weight: bold;
+  background-color: #f5f5f5;
+  /* Nuevas propiedades para ajustar el texto */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  word-break: break-word;
+  white-space: normal; /* Permitir saltos de línea */
+  line-height: 1.2; /* Ajustar el espaciado entre líneas */
+}
+
+.dia-cell {
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  min-height: 120px; /* Altura mínima ajustable */
   vertical-align: top;
-  overflow: visible; /* Permitir que el contenido sea visible */
+  overflow: visible;
+  background: white;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-normal);
+}
+
+.dia-cell:hover {
+  transform: scale(1.02);
+  box-shadow: var(--shadow-sm);
+  z-index: 1;
 }
 
 /*====================
 4. Módulos y sus colores
 ====================*/
-
 [class^="modulo-"] {
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
 [class^="modulo-"]:hover {
@@ -125,46 +185,60 @@ td {
 }
 
 .modulo-m6 {
-  background: linear-gradient(135deg, var(--color-m6) 0%, #ff99aa 100%) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--color-m6) 0%,
+    #ff99aa 100%
+  ) !important;
 }
 
 .modulo-m7 {
-  background: linear-gradient(135deg, var(--color-m7) 0%, #80e080 100%) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--color-m7) 0%,
+    #80e080 100%
+  ) !important;
 }
 
 .modulo-m8 {
-  background: linear-gradient(135deg, var(--color-m8) 0%, #70b8ff 100%) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--color-m8) 0%,
+    #70b8ff 100%
+  ) !important;
 }
 
 .modulo-m9 {
-  background: linear-gradient(135deg, var(--color-m9) 0%, #cc88cc 100%) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--color-m9) 0%,
+    #cc88cc 100%
+  ) !important;
 }
 
 .modulo-m12 {
-  background: linear-gradient(135deg, var(--color-m12) 0%, #e0d070 100%) !important;
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--color-m12) 0%,
+    #e0d070 100%
+  ) !important;
 }
 
 /*====================
 5. Cambios de horario
 ====================*/
-
 .cambio-horario {
   background: linear-gradient(135deg, var(--color-cambio) 0%, #ffeeba 100%);
   border: 2px solid var(--color-cambio-borde);
   position: relative;
   animation: highlight 2s ease-in-out infinite;
-  height: auto; /* Permite crecer solo a celdas con cambios */
-  max-height: none;
+  min-height: auto;
   overflow: visible;
   z-index: 1;
+  border-radius: var(--border-radius-sm);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Añadir indicador de cambio */
 .cambio-horario::after {
   content: "!";
   position: absolute;
@@ -186,11 +260,12 @@ td {
 .cambio-info {
   display: flex;
   align-items: center;
-  gap: 12px;
   padding: 12px;
   border-radius: 6px;
   margin-top: 8px;
   font-size: 0.95em;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .cambio-icon {
@@ -200,29 +275,6 @@ td {
   align-items: center;
   justify-content: center;
   margin-right: 8px;
-}
-
-.cambio-info::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px; /* Icono más grande */
-  height: 28px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-/* Hacer los iconos más visibles */
-.cambio-absencia::before,
-.cambio-aula::before,
-.cambio-professor::before,
-.cambio-cancelada::before,
-.cambio-altres::before {
-  opacity: 0.9;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
 }
 
 /* Colores según tipo de cambio */
@@ -250,13 +302,6 @@ td {
   background: linear-gradient(135deg, #e1bee7 0%, #ce93d8 100%);
   border-left: 3px solid #9c27b0;
 }
-.cambio-icon {
-  width: 24px;
-  height: 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 
 /* Tooltip para cambios */
 .cambio-horario::before {
@@ -282,23 +327,35 @@ button {
   display: block;
   margin: 2rem auto;
   padding: 1rem 2rem;
-  background: linear-gradient(135deg, #6ab7f5 0%, #a3bffa 100%); /* Colores más suaves */
+  background: linear-gradient(
+    135deg,
+    var(--secondary-color) 0%,
+    var(--secondary-light) 100%
+  );
   color: var(--text-color);
   border: none;
-  border-radius: 5px;
+  border-radius: var(--border-radius-md);
   cursor: pointer;
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-sm);
 }
 
 button:hover {
-  background: linear-gradient(135deg, #a3bffa 0%, #6ab7f5 100%); /* Inversión suave */
+  background: linear-gradient(
+    135deg,
+    var(--secondary-light) 0%,
+    var(--secondary-color) 100%
+  );
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Sombra un poco más marcada */
-  color: var(--primary-color); /* Cambio sutil en el texto al hacer hover */
+  box-shadow: var(--shadow-md);
+  color: var(--primary-color);
+}
+
+button:active {
+  transform: translateY(1px);
 }
 
 .selector-setmana {
@@ -307,6 +364,10 @@ button:hover {
   justify-content: center;
   gap: 1rem;
   margin-bottom: 2rem;
+  background: white;
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
 }
 
 #setmanaActual {
@@ -336,8 +397,17 @@ button:hover {
 #selector-any {
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius-sm);
-  border: 1px solid var(--primary-color);
+  border: 2px solid var(--border-color);
   min-width: 120px;
+  background: white;
+  transition: all var(--transition-normal);
+}
+
+#selector-cicle:focus,
+#selector-any:focus {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+  outline: none;
 }
 
 .cella {
@@ -357,6 +427,7 @@ button:hover {
   gap: 12px;
   padding: 12px;
   height: auto;
+  border-radius: var(--border-radius-sm);
 }
 
 .classe-info-basic {
@@ -369,6 +440,8 @@ button:hover {
   font-weight: bold;
   font-size: 1.1em;
   margin-bottom: 6px;
+  color: var(--primary-color);
+  font-weight: 600;
 }
 
 .professor {
@@ -386,24 +459,30 @@ button:hover {
 /*====================
 7. Animaciones
 ====================*/
-/* Animación del indicador */
 @keyframes pulse {
   0% {
     transform: scale(1);
+    opacity: 1;
   }
   50% {
-    transform: scale(1.1);
+    transform: scale(1.05);
+    opacity: 0.8;
   }
   100% {
     transform: scale(1);
+    opacity: 1;
   }
 }
 
 @keyframes highlight {
-  0%,
-  50%,
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
   100% {
-    transform: none;
+    transform: translateY(0);
   }
 }
 
@@ -425,8 +504,6 @@ button:hover {
 /*====================
 9. Media Queries
 ====================*/
-
-/* Media Queries mejorados */
 @media (max-width: 768px) {
   :root {
     --spacing-lg: 1rem;
@@ -436,40 +513,37 @@ button:hover {
   .container {
     width: 98%;
     padding: var(--spacing-xs);
-    overflow-x: auto; /* Permite scroll horizontal */
+    overflow-x: auto;
   }
 
-  table {
+  .horari-container {
     font-size: 0.85rem;
-    min-width: 800px; /* Asegura que la tabla no se comprima demasiado */
+    min-width: 800px; /* Asegura que la cuadrícula no se comprima demasiado */
   }
 
-  td {
+  .dia-cell {
     min-height: 100px;
-    min-width: 120px;
-    height: 120px;
-    width: 120px;
   }
 
   .cambio-info {
     font-size: 0.8em;
   }
 
-  th:first-child,
-  td:first-child {
+  .hora-cell {
     width: 60px;
     min-width: 60px;
-    font-size: 0.8em;
+    font-size: 0.75em;
+    padding: 8px;
   }
 }
 
 @media (max-width: 480px) {
-  table {
+  .horari-container {
     font-size: 0.75rem;
   }
 
-  th,
-  td {
+  .hora-cell,
+  .dia-cell {
     padding: var(--spacing-xs);
   }
 
@@ -478,7 +552,6 @@ button:hover {
   }
 }
 
-/* Mejoras de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
