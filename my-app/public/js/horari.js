@@ -29,6 +29,15 @@ const changeIcons = {
   </svg>`,
 };
 
+const selectorDia = document.getElementById('selector-dia');
+let diaSeleccionado = 'Dilluns';
+
+// Añadir event listener para el selector de día
+selectorDia.addEventListener('change', function(e) {
+    diaSeleccionado = e.target.value;
+    actualizarHorario(); // Función que deberás modificar para mostrar solo el día seleccionado
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   const grid = document.querySelector("#horari");
   const horaRanges = {
@@ -60,6 +69,31 @@ document.addEventListener("DOMContentLoaded", function () {
       grid.appendChild(diaDiv);
     });
   });
+
+  // Inicializar la vista móvil
+  actualizarHorario();
+
+  // Añadir listener para el selector de día
+  document.getElementById('selector-dia').addEventListener('change', actualizarHorario);
+  
+  // Añadir listener para cambios de tamaño de ventana
+  window.addEventListener('resize', actualizarHorario);
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Inicializar la vista móvil
+    actualizarHorario();
+
+    // Añadir listener para el selector de día
+    const selectorDia = document.getElementById('selector-dia');
+    if (selectorDia) {
+        selectorDia.addEventListener('change', function() {
+            actualizarHorario();
+        });
+    }
+
+    // Añadir listener para cambios de tamaño de ventana
+    window.addEventListener('resize', actualizarHorario);
 });
 
 /**
@@ -200,3 +234,47 @@ async function carregarDades(start, end, cursComplet) {
     throw error;
   }
 }
+
+function actualizarHorario() {
+    const horariGrid = document.getElementById('horari');
+    const horariContainer = document.querySelector('.horari-container');
+    const diaSeleccionado = document.getElementById('selector-dia').value.toLowerCase();
+    const esMobile = window.innerWidth <= 768;
+    const horaCells = document.querySelectorAll('.hora-cell');
+    const diaCells = document.querySelectorAll('.dia-cell');
+
+    if (esMobile) {
+        // Mostrar el selector de día
+        document.getElementById('selector-dia').style.display = 'block';
+        
+        // Ajustar la visualización del grid
+        horariContainer.classList.add('mobile-view');
+        
+        // Mostrar todas las celdas de hora
+        horaCells.forEach(cell => {
+            cell.style.display = 'block';
+        });
+
+        // Mostrar solo las celdas del día seleccionado
+        diaCells.forEach(cell => {
+            const cellDia = cell.getAttribute('data-dia');
+            if (cellDia === diaSeleccionado) {
+                cell.style.display = 'block';
+            } else {
+                cell.style.display = 'none';
+            }
+        });
+    } else {
+        // Restaurar vista de escritorio
+        document.getElementById('selector-dia').style.display = 'none';
+        horariContainer.classList.remove('mobile-view');
+        
+        // Mostrar todas las celdas
+        [...horaCells, ...diaCells].forEach(cell => {
+            cell.style.display = '';
+        });
+    }
+}
+
+// Añadir listener para cambios de tamaño de ventana
+window.addEventListener('resize', actualizarHorario);

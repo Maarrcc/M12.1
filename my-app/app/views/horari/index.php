@@ -31,6 +31,14 @@
                     }
                     ?>
                 </select>
+                <!-- Selector de día para móvil -->
+                <select id="selector-dia" class="mobile-only">
+                    <option value="Dilluns">Dilluns</option>
+                    <option value="Dimarts">Dimarts</option>
+                    <option value="Dimecres">Dimecres</option>
+                    <option value="Dijous">Dijous</option>
+                    <option value="Divendres">Divendres</option>
+                </select>
             </div>
             <div class="selector-setmana">
                 <button id="setmanaAnterior">
@@ -40,7 +48,6 @@
             </div>
         </div>
 
-        <!-- Reemplazamos <table> por <div> con estructura de cuadrícula -->
         <div class="horari-container">
             <!-- Encabezado -->
             <div class="horari-header">

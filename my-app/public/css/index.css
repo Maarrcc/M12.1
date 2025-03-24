@@ -2,7 +2,7 @@
 1. Variables globales
 ====================*/
 :root {
-  /* Colores base - Paleta mejorada */
+  /* Colores base */
   --primary-color: #2c3e50;
   --primary-light: #34495e;
   --primary-dark: #243342;
@@ -17,7 +17,7 @@
   --text-light: #7f8c8d;
   --border-color: #dcdde1;
 
-  /* Colores módulos - Más vibrantes */
+  /* Colores módulos */
   --color-m6: #ff6b81;
   --color-m7: #7bed9f;
   --color-m8: #70a1ff;
@@ -535,6 +535,52 @@ button:active {
     font-size: 0.75em;
     padding: 8px;
   }
+
+  .mobile-only {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .horari-header {
+    display: none; /* Ocultamos la cabecera de días en móvil */
+  }
+
+  .horari-grid {
+    display: block; /* Cambiamos a visualización vertical */
+  }
+
+  .horari-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    margin-bottom: 10px;
+  }
+
+  .cell {
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+
+  /* Ajustar controles para móvil */
+  .controls {
+    flex-direction: column;
+  }
+
+  .selectors {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .selectors select {
+    width: 100%;
+    margin: 5px 0;
+  }
+
+  .selector-setmana {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -558,3 +604,142 @@ button:active {
     transition: none !important;
   }
 }
+
+/* Estilos para dispositivos móviles */
+@media screen and (max-width: 768px) {
+    /* Mostrar el selector de día en móvil */
+    .mobile-only {
+        display: block !important;
+        margin: 10px 0;
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+    }
+
+    /* Ocultar la cabecera de días en móvil */
+    .horari-header {
+        display: none !important;
+    }
+
+    /* Estilo para el contenedor del horario en móvil */
+    .horari-container.mobile-view {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Estilo para la cuadrícula en móvil */
+    .horari-container.mobile-view .horari-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 5px;
+        width: 100%;
+    }
+
+    /* Estilos para las celdas en móvil */
+    .horari-container.mobile-view .hora-cell {
+        width: 100px;
+        background-color: #f5f5f5;
+        padding: 10px;
+        font-weight: bold;
+    }
+
+    .horari-container.mobile-view .dia-cell {
+        width: 100%;
+        min-height: 80px;
+    }
+
+    /* Ajustar el contenedor de controles */
+    .controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .selectors {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Ocultar selector de día en desktop */
+.mobile-only {
+    display: none;
+}
+
+/* Ocultar selector de día en desktop */
+.mobile-only {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+    .mobile-only {
+        display: block !important;
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .horari-container.mobile-view {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .horari-container.mobile-view .horari-header {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .horari-container.mobile-view .horari-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 5px;
+    }
+
+    .horari-container.mobile-view .hora-cell {
+        width: 100px;
+        padding: 10px;
+        background-color: #f5f5f5;
+    }
+
+    .horari-container.mobile-view .dia-cell {
+        width: 100%;
+        min-height: 80px;
+    }
+
+    .controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .selectors {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .selector-setmana {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .selector-setmana button {
+        padding: 8px 15px;
+    }
+}
+
+/* Estilos base para el selector móvil */
+#selector-dia {
+    display: none;
+}
+
+@media screen and (max-width: 768px) {
+    #selector-dia {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+    }
+}
+
