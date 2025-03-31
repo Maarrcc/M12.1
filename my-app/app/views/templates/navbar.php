@@ -29,6 +29,8 @@
                     <a href="#" class="dropdown-toggle">Acadèmic</a>
                     <ul class="dropdown-menu">
                         <li><a href="/M12.1/my-app/public/index.php?controller=curs">Gestió Cursos</a></li>
+                        <li><a href="/M12.1/my-app/public/index.php?controller=horari&action=manage">Gestió Horaris</a></li>
+                        <li><a href="/M12.1/my-app/public/index.php?controller=horari&action=create">Nou Horari</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=assignatures&action=create">Nova Assignatura</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=aula&action=create">Nova Aula</a></li>
                     </ul>

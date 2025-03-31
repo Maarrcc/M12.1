@@ -96,13 +96,38 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener('resize', actualizarHorario);
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Configuración inicial
+    const selectorCicle = document.getElementById('selector-cicle');
+    const selectorAny = document.getElementById('selector-any');
+    
+    // Obtener fecha actual
+    const today = new Date();
+    const dates = obtenirDatesSetmana(today);
+    
+    // Cargar horario inicial
+    const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
+    actualitzaHorari(dates, cursComplet);
+
+    // Event listeners para cambios
+    selectorCicle.addEventListener('change', function() {
+        const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
+        actualitzaHorari(dates, cursComplet);
+    });
+
+    selectorAny.addEventListener('change', function() {
+        const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
+        actualitzaHorari(dates, cursComplet);
+    });
+});
+
 /**
- * Actualiza la taula d'horaris amb les dades de l'horari base i
- * els canvis corresponents a una setmana i un curs.
+ * Actualiza la taula d'horaris con las datos del horario base y
+ * los cambios correspondientes a una semana y un curso.
  *
- * @param {Object} datesSetmana objecte amb les dates d'inici i fi
- *                              de la setmana en format ISO
- * @param {string} [cursComplet] Identificador de curs (format:
+ * @param {Object} datesSetmana objeto con las fechas de inicio y fin
+ *                              de la semana en formato ISO
+ * @param {string} [cursComplet] Identificador de curso (formato:
  *                              "DAW-Primer")
  */
 function actualitzaHorari(datesSetmana, cursComplet) {
