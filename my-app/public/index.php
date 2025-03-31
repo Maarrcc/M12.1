@@ -44,29 +44,21 @@ require_once '../app/controllers/ProfessorController.php';
 require_once '../app/controllers/CanvisController.php';
 require_once '../app/controllers/ImportController.php';
 require_once '../app/controllers/AssignaturesAlumnesController.php';
+require_once '../app/controllers/CursController.php';
 
 // Obtener el controlador y la acción de la URL
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'auth';
-$action = isset($_GET['action']) ? $_GET['action'] : 'login';
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'horari';
+$action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
-// Construir el nombre de la clase del controlador
+// Crear una instancia del controlador
 $controllerName = ucfirst($controller) . 'Controller';
+$controllerInstance = new $controllerName($pdo);
 
-// Debug
-error_log("Intentando cargar controlador: " . $controllerName);
-
-try {
-    if (class_exists($controllerName)) {
-        $controller = new $controllerName($pdo);
-        if (method_exists($controller, $action)) {
-            $controller->$action();
-        } else {
-            throw new Exception('Acción no encontrada');
-        }
-    } else {
-        throw new Exception('Controlador no encontrado');
-    }
-} catch (Exception $e) {
-    // Manejo de errores
-    echo "Error: " . $e->getMessage();
+// Verificar si el método existe
+if (method_exists($controllerInstance, $action)) {
+    $controllerInstance->$action();
+} else if (method_exists($controllerInstance, 'default')) {
+    $controllerInstance->default();
+} else {
+    die('Error: Acción no encontrada');
 }

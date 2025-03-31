@@ -315,18 +315,16 @@ textarea {
   }
 }
 /* Modo oscuro automático basado en prefers-color-scheme */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   html {
-    filter: invert(100%) hue-rotate(180deg);
+    filter: invert(90%) hue-rotate(180deg);
   }
 
-  /* Restaurar imágenes, videos y otros elementos multimedia */
   img, video, iframe {
-    filter: invert(100%) hue-rotate(180deg);
+    filter: invert(90%) hue-rotate(180deg);
   }
 
-  /* Ajustar elementos con fondo transparente o efectos especiales */
   .container {
-    backdrop-filter: invert(100%) blur(10px); /* Ajustar el blur si usas backdrop-filter */
+    backdrop-filter: invert(90%) blur(10px); 
   }
-}
+} */
