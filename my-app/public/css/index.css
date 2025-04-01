@@ -512,29 +512,44 @@ button:active {
   }
 
   .container {
-    width: 98%;
+    width: 100%;
     padding: var(--spacing-xs);
-    overflow-x: auto;
+    margin: var(--spacing-xs);
+    overflow-x: hidden; /* Evita el scroll horizontal */
   }
 
   .horari-container {
     font-size: 0.85rem;
-    min-width: 800px; /* Asegura que la cuadrícula no se comprima demasiado */
+    min-width: unset; /* Elimina el ancho mínimo fijo */
+    width: 100%;
+    overflow-x: hidden;
   }
 
-  .dia-cell {
-    min-height: 100px;
+  .horari-grid {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
   }
 
-  .cambio-info {
-    font-size: 0.8em;
+  .horari-row {
+    display: grid;
+    grid-template-columns: 80px 1fr; /* Ancho fijo para hora + contenido */
+    width: 100%;
+    gap: 5px;
   }
 
   .hora-cell {
-    width: 60px;
-    min-width: 60px;
-    font-size: 0.75em;
+    width: 80px;
+    min-width: unset;
+    font-size: 0.9em;
     padding: 8px;
+  }
+
+  .dia-cell {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px;
   }
 
   .mobile-only {
@@ -547,26 +562,6 @@ button:active {
     display: none; /* Ocultamos la cabecera de días en móvil */
   }
 
-  .horari-grid {
-    display: block; /* Cambiamos a visualización vertical */
-  }
-
-  .horari-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    margin-bottom: 10px;
-  }
-
-  .cell {
-    padding: 10px;
-    border: 1px solid #ccc;
-  }
-
-  /* Ajustar controles para móvil */
-  .controls {
-    flex-direction: column;
-  }
-
   .selectors {
     flex-direction: column;
     width: 100%;
@@ -574,13 +569,18 @@ button:active {
 
   .selectors select {
     width: 100%;
-    margin: 5px 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .selector-setmana {
     width: 100%;
     justify-content: space-between;
     margin-top: 10px;
+  }
+
+  .controls {
+    flex-direction: column;
   }
 }
 
