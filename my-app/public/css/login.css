@@ -48,7 +48,6 @@ body {
   line-height: 1.6;
 }
 
-@import 'formularioBase.css';
 
 /* Estilos específicos del login */
 .login-container {
