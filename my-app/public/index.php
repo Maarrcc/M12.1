@@ -4,7 +4,8 @@ header('Access-Control-Allow-Origin: *');
 
 if (
     !isset($_SESSION['user']) &&
-    !($_GET['controller'] === 'auth' && ($_GET['action'] === 'login' || $_GET['action'] === 'validate' || $_GET['action'] === 'register' || $_GET['action'] === 'store'))
+    !($_GET['controller'] === 'auth' && ($_GET['action'] === 'login' || $_GET['action'] === 'validate' || $_GET['action'] === 'register' || $_GET['action'] === 'store')) &&
+    !($_GET['controller'] === 'home' || !isset($_GET['controller']))
 ) {
     header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
     exit;
@@ -45,9 +46,10 @@ require_once '../app/controllers/CanvisController.php';
 require_once '../app/controllers/ImportController.php';
 require_once '../app/controllers/AssignaturesAlumnesController.php';
 require_once '../app/controllers/CursController.php';
+require_once '../app/controllers/HomeController.php';
 
 // Obtener el controlador y la acción de la URL
-$controller = isset($_GET['controller']) ? $_GET['controller'] : 'horari';
+$controller = isset($_GET['controller']) ? $_GET['controller'] : 'home';
 $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
 // Crear una instancia del controlador

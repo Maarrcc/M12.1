@@ -9,7 +9,7 @@
 <body>
 <?php include_once __DIR__ . '/../templates/navbar.php'; ?>
     <div class="login-container">
-        <h2>Assignar Usuari com Alumne</h2>
+        <h2>Assignar Alumne amb Curs</h2>
         <?php if (isset($_SESSION['error'])): ?>
             <div class="error-message">
                 <?php 
@@ -20,7 +20,7 @@
         <?php endif; ?>
         <form action="/M12.1/my-app/public/index.php?controller=alumnes&action=store" method="POST">
             <div class="form-group">
-                <label for="id_usuari">Usuari:</label>
+                <label for="id_usuari">Alumne:</label>
                 <select name="id_usuari" id="id_usuari" required>
                     <?php foreach ($usuaris as $usuari): ?>
                         <option value="<?php echo $usuari['id_usuari']; ?>">

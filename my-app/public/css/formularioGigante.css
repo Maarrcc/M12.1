@@ -122,12 +122,12 @@ select.form-control {
 }
 
 input[type="date"] {
-  width: 100%; /* Ancho completo */
-  padding: var(--spacing-sm);
+  width: 100%;
+  padding: 0.75rem 1rem;
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius-md);
   font-size: 1rem;
-  background-color: white;
+  background-color: red;
   transition: var(--transition);
 }
 
@@ -141,9 +141,7 @@ input[type="date"]:focus {
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
 }
 
-/* Mejorar inputs y selects */
 .form-group select,
-.form-group input[type="date"],
 .form-group textarea {
   width: 100%;
   padding: 0.75rem 1rem;
