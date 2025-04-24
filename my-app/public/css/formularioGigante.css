@@ -121,30 +121,13 @@ select.form-control {
   appearance: none;
 }
 
-input[type="date"] {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius-md);
-  font-size: 1rem;
-  background-color: red;
-  transition: var(--transition);
-}
-
-input[type="date"]:hover {
-  border-color: var(--secondary-color);
-}
-
-input[type="date"]:focus {
-  outline: none;
-  border-color: var(--secondary-color);
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
 
 .form-group select,
-.form-group textarea {
+.form-group textarea,
+.form-group input[type="date"] {
   width: 100%;
   padding: 0.75rem 1rem;
+  box-sizing: border-box;
   border: 2px solid var(--border-color);
   border-radius: var(--border-radius-md);
   font-size: 1rem;

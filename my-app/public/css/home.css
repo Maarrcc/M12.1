@@ -44,7 +44,6 @@ body {
   opacity: 0.9;
 }
 
-/* Features Section */
 .features-section {
   padding: 4rem 1rem;
   background-color: var(--background-color);
@@ -91,7 +90,6 @@ body {
   opacity: 0.8;
 }
 
-/* CTA Section */
 .cta-section {
   padding: 4rem 1rem;
   background-color: var(--card-background);
