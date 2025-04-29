@@ -1,6 +1,6 @@
 <?php include_once __DIR__ . '/../templates/navbar.php'; ?>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/M12.1/my-app/public/css/horariForm.css">
+<link rel="stylesheet" href="/M12.1/my-app/public/css/HorarioCrud.css">
 <link rel="stylesheet" type="text/css" href="/M12.1/my-app/public/css/navbar.css" />
 
 <div class="horari-manage-container">
