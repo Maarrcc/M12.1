@@ -16,7 +16,7 @@ const changeIcons = {
     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
   </svg>`,
   "Canvi professor": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#2196f3">
-    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4-4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
   </svg>`,
   "Classe cancelada": `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#ffc107">
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
@@ -131,95 +131,127 @@ document.addEventListener('DOMContentLoaded', function() {
  *                              "DAW-Primer")
  */
 function actualitzaHorari(datesSetmana, cursComplet) {
-  const grid = document.querySelector("#horari");
+    const grid = document.querySelector("#horari");
 
-  if (!cursComplet) {
-    const cicle = document.getElementById("selector-cicle")?.value || "DAW";
-    const any = document.getElementById("selector-any")?.value || "Primer";
-    cursComplet = `${cicle}-${any}`;
-  }
+    if (!cursComplet) {
+        const cicle = document.getElementById("selector-cicle")?.value || "DAW";
+        const any = document.getElementById("selector-any")?.value || "Primer";
+        cursComplet = `${cicle}-${any}`;
+    }
 
-  if (grid) grid.style.opacity = "0.5";
+    if (grid) grid.style.opacity = "0.5";
 
-  carregarDades(
-    datesSetmana.dilluns.toISOString().split("T")[0],
-    datesSetmana.divendres.toISOString().split("T")[0],
-    cursComplet
-  )
-    .then((data) => {
-      console.log("Datos recibidos:", data);
+    carregarDades(
+        datesSetmana.dilluns.toISOString().split("T")[0],
+        datesSetmana.divendres.toISOString().split("T")[0],
+        cursComplet
+    )
+        .then((data) => {
+            if (!data || !data.horari || !Array.isArray(data.horari)) {
+                throw new Error("Formato de datos inválido");
+            }
 
-      if (!data || !data.horari || !Array.isArray(data.horari)) {
-        throw new Error("Formato de datos inválido");
-      }
+            // Limpiar cuadrícula
+            document.querySelectorAll(".dia-cell").forEach((cell) => {
+                cell.className = "dia-cell celda-vacia";
+                cell.innerHTML = "";
+                cell.removeAttribute("data-cambio");
+            });
 
-      // Limpiar cuadrícula
-      document.querySelectorAll(".dia-cell").forEach((cell) => {
-        cell.className = "dia-cell celda-vacia";
-        cell.innerHTML = "";
-      });
+            // Procesar horario base
+            data.horari.forEach((item) => {
+                if (!item || !item.hora_inici || !item.dia) {
+                    console.warn('Datos de horario incompletos:', item);
+                    return;
+                }
 
-      // Procesar horario base
-      data.horari.forEach((item) => {
-        const hora = item.hora_inici.slice(0, 5);
-        const dia = item.dia.toLowerCase();
-        const cell = document.querySelector(
-          `.dia-cell[data-dia='${dia}'][data-hora='${hora}']`
-        );
+                const hora = item.hora_inici.slice(0, 5);
+                const dia = item.dia.toLowerCase();
+                const cell = document.querySelector(
+                    `.dia-cell[data-dia='${dia}'][data-hora='${hora}']`
+                );
 
-        if (cell) {
-          cell.classList.remove("celda-vacia");
-          cell.setAttribute("data-horari", item.id_horari);
-          const modulo = item.assignatura.match(/M\d+/)?.[0] || "default";
-          cell.classList.add(assignaturesClasses[modulo] || "modulo-default");
+                if (cell) {
+                    cell.classList.remove("celda-vacia");
+                    cell.setAttribute("data-horari", item.id_horari);
+                    const modulo = item.assignatura.match(/M\d+/)?.[0] || "default";
+                    cell.classList.add(assignaturesClasses[modulo] || "modulo-default");
 
-          cell.innerHTML = `
-            <div class="classe-info">
-              <div class="classe-info-basic">
-                <div class="assignatura">${item.assignatura}</div>
-                <div class="professor">${item.professor}</div>
-                <div class="aula">Aula: ${item.aula}</div>
-              </div>
-            </div>`;
-        }
-      });
+                    cell.innerHTML = `
+                        <div class="classe-info">
+                            <div class="classe-info-basic">
+                                <div class="assignatura">${item.assignatura}</div>
+                                <div class="professor">${item.professor}</div>
+                                <div class="aula">Aula: ${item.aula}</div>
+                            </div>
+                        </div>`;
+                }
+            });
 
-      // Procesar cambios
-      if (data.canvis && Array.isArray(data.canvis)) {
-        data.canvis.forEach((canvi) => {
-          const cell = document.querySelector(
-            `.dia-cell[data-horari='${canvi.id_horari}']`
-          );
-          if (cell) {
-            cell.classList.add("cambio-horario");
-            const tipoCambio = canvi.tipus_canvi;
-            const tipoCambioClass = tipoCambio.toLowerCase().replace(" ", "-");
+            // Procesar cambios
+            if (data.canvis && Array.isArray(data.canvis)) {
+                data.canvis.forEach((canvi) => {
+                    if (!canvi || !canvi.id_horari || !canvi.tipus_canvi) {
+                        console.warn('Datos de cambio incompletos:', canvi);
+                        return;
+                    }
 
-            const canviInfo = document.createElement("div");
-            canviInfo.className = `cambio-info cambio-${tipoCambioClass}`;
-            canviInfo.innerHTML = `
-              <span class="cambio-icon">${
-                changeIcons[tipoCambio] || changeIcons["default"]
-              }</span>
-              <span class="cambio-text">${canvi.descripcio_canvi}</span>
-            `;
-            cell.appendChild(canviInfo);
-          }
+                    const cell = document.querySelector(
+                        `.dia-cell[data-horari='${canvi.id_horari}']`
+                    );
+
+                    if (cell) {
+                        cell.classList.add("cambio-horario");
+                        cell.setAttribute("data-cambio", canvi.tipus_canvi);
+
+                        const tipoCambio = canvi.tipus_canvi.toLowerCase().replace(" ", "-");
+                        const canviInfo = document.createElement("div");
+                        canviInfo.className = `cambio-info cambio-${tipoCambio}`;
+
+                        let descripcionCambio = '';
+                        switch (canvi.tipus_canvi) {
+                            case 'Absència professor':
+                                descripcionCambio = `Professor absent`;
+                                break;
+                            case 'Canvi aula':
+                                descripcionCambio = canvi.aula_substituta ? 
+                                    `Canvi d'aula: ${canvi.aula_original} → ${canvi.aula_substituta}` :
+                                    `Canvi d'aula`;
+                                break;
+                            case 'Canvi professor':
+                                descripcionCambio = canvi.professor_substitut ?
+                                    `Canvi de professor: ${canvi.professor_original} → ${canvi.professor_substitut}` :
+                                    `Canvi de professor`;
+                                break;
+                            case 'Classe cancelada':
+                                descripcionCambio = 'Classe cancel·lada';
+                                break;
+                            default:
+                                descripcionCambio = canvi.descripcio_canvi || 'Altres canvis';
+                        }
+
+                        canviInfo.innerHTML = `
+                            <span class="cambio-icon">${changeIcons[canvi.tipus_canvi] || changeIcons["default"]}</span>
+                            <span class="cambio-text">${descripcionCambio}</span>
+                        `;
+
+                        cell.appendChild(canviInfo);
+                    }
+                });
+            }
+
+            grid.style.opacity = "1";
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            grid.style.opacity = "1";
+            const errorDiv = document.createElement("div");
+            errorDiv.id = "error-message";
+            errorDiv.textContent = "Error al cargar el horario";
+            document.querySelector(".horari-container").prepend(errorDiv);
         });
-      }
-
-      grid.style.opacity = "1";
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      grid.style.opacity = "1";
-
-      const errorDiv = document.createElement("div");
-      errorDiv.id = "error-message";
-      errorDiv.textContent = "Error al cargar el horario";
-      document.querySelector(".horari-container").prepend(errorDiv);
-    });
 }
+
 // Asegurar que la función se llama cuando se carga la página
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
@@ -239,28 +271,53 @@ window.actualitzaHorari = actualitzaHorari;
  * @throws {Error} Si hi ha algun error en la càrrega.
  */
 async function carregarDades(start, end, cursComplet) {
-  try {
-    const url = `${API_CONFIG.BASE_URL}?controller=horari&action=getHorari&start=${start}&end=${end}&curs=${cursComplet}`;
-    const response = await fetch(url, {
-      headers: {
-        'X-API-Key': API_CONFIG.API_KEY
-      }
-    });
+    try {
+        const url = `${API_CONFIG.BASE_URL}?curs=${cursComplet}`;
+        const urlCanvis = `${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`;
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Fetching data from:', { url, urlCanvis });
+        
+        const [horariResponse, canvisResponse] = await Promise.all([
+            fetch(url, {
+                headers: {
+                    'X-API-Key': API_CONFIG.API_KEY
+                }
+            }),
+            fetch(urlCanvis, {
+                headers: {
+                    'X-API-Key': API_CONFIG.API_KEY
+                }
+            })
+        ]);
+
+        console.log('Response status:', { 
+            horari: horariResponse.status, 
+            canvis: canvisResponse.status 
+        });
+
+        if (!horariResponse.ok || !canvisResponse.ok) {
+            throw new Error(`HTTP error! status: ${horariResponse.status} ${canvisResponse.status}`);
+        }
+
+        const [horariData, canvisData] = await Promise.all([
+            horariResponse.json(),
+            canvisResponse.json()
+        ]);
+
+        console.log('Response data:', { horariData, canvisData });
+
+        if (!horariData.success || !canvisData.success) {
+            throw new Error(horariData.message || canvisData.message || 'Error desconocido');
+        }
+        
+        return {
+            horari: horariData.data,
+            canvis: canvisData.data
+        };
+    } catch (error) {
+        console.error("Error en carregarDades:", error);
+        throw error;
     }
-    const data = await response.json();
-
-    if (data.error) {
-      throw new Error(data.error);
-    }
-
-    return data;
-  } catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
 }
 
 function actualizarHorario() {

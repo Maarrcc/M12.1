@@ -1,27 +1,26 @@
 <?php
-require_once '../app/models/Horari.php';
+require_once '../app/models/Canvi.php';
 
-class HorariController
+class CanviController
 {
-    private $horariModel;
+    private $canviModel;
 
     public function __construct($db)
     {
-        $this->horariModel = new Horari($db);
+        $this->canviModel = new Canvi($db);
     }
 
     public function index()
     {
         try {
             $cursComplet = isset($_GET['curs']) ? $_GET['curs'] : null;
-            $dia = isset($_GET['dia']) ? $_GET['dia'] : null;
+            $start = isset($_GET['start']) ? $_GET['start'] : null;
+            $end = isset($_GET['end']) ? $_GET['end'] : null;
 
-            if ($cursComplet && $dia) {
-                $response = $this->horariModel->getByCursAndDia($cursComplet, $dia);
-            } elseif ($cursComplet) {
-                $response = $this->horariModel->getByCurs($cursComplet);
+            if ($cursComplet && $start && $end) {
+                $response = $this->canviModel->getCanvisPeriode($cursComplet, $start, $end);
             } else {
-                $response = $this->horariModel->getAll();
+                $response = $this->canviModel->getAllCanvis();
             }
 
             echo json_encode([

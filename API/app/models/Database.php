@@ -9,11 +9,15 @@ class Database {
                 "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME,
                 DB_USER,
                 DB_PASS,
-                [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
+                [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+                ]
             );
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            die("Error de conexión: " . $e->getMessage());
+            error_log("Error de conexión: " . $e->getMessage());
+            throw new Exception("Error de conexión a la base de datos");
         }
     }
 
@@ -22,5 +26,13 @@ class Database {
             self::$instance = new self();
         }
         return self::$instance->pdo;
+    }
+
+    // Prevenir clonación del objeto
+    private function __clone() {}
+
+    // Prevenir deserialización del objeto
+    public function __wakeup() {
+        throw new Exception("Cannot unserialize singleton");
     }
 }

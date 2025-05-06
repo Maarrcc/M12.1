@@ -7,49 +7,90 @@ class Horari {
     }
 
     public function getAll() {
-        $sql = "SELECT h.*, 
-                       c.nom_cicle, 
-                       c.any_academic,
-                       a.nom AS assignatura,
-                       u.nom as professor,
-                       au.nom_aula as aula
-                FROM Horari h
-                JOIN Cursos c ON h.id_curs = c.id_curs
-                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                JOIN Professors p ON h.id_professor = p.id_professor
-                JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                JOIN Aulas au ON h.id_aula = au.id_aula
-                ORDER BY c.nom_cicle, c.any_academic, h.dia, h.hora_inici";
-        
-        $stmt = $this->pdo->query($sql);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "SELECT h.*, 
+                        c.nom_cicle, 
+                        c.any_academic,
+                        a.nom AS assignatura,
+                        u.nom as professor,
+                        au.nom_aula as aula
+                    FROM Horari h
+                    JOIN Cursos c ON h.id_curs = c.id_curs
+                    JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
+                    JOIN Professors p ON h.id_professor = p.id_professor
+                    JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                    JOIN Aulas au ON h.id_aula = au.id_aula
+                    ORDER BY c.nom_cicle, c.any_academic, h.dia, h.hora_inici";
+            
+            $stmt = $this->pdo->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener los horarios: " . $e->getMessage());
+        }
     }
 
     public function getByCurs($cursComplet) {
-        list($cicle, $any) = explode('-', $cursComplet);
+        try {
+            list($cicle, $any) = explode('-', $cursComplet);
 
-        $sql = "SELECT 
-                H.id_horari,
-                H.hora_inici, 
-                H.hora_fi, 
-                H.dia,
-                C.nom_cicle,
-                C.any_academic,
-                A.nom_aula AS aula,
-                U.nom AS professor, 
-                Asg.nom AS assignatura
-            FROM Horari H
-            JOIN Cursos C ON H.id_curs = C.id_curs
-            JOIN Aulas A ON H.id_aula = A.id_aula
-            JOIN Assignatures Asg ON H.id_assignatura = Asg.id_assignatura
-            JOIN Professors P ON H.id_professor = P.id_professor
-            JOIN Usuaris U ON P.id_usuari = U.id_usuari
-            WHERE C.nom_cicle = ? AND C.any_academic = ?
-            ORDER BY H.hora_inici";
+            $sql = "SELECT 
+                    h.id_horari,
+                    h.hora_inici, 
+                    h.hora_fi, 
+                    h.dia,
+                    c.nom_cicle,
+                    c.any_academic,
+                    au.nom_aula AS aula,
+                    u.nom AS professor, 
+                    a.nom AS assignatura
+                FROM Horari h
+                JOIN Cursos c ON h.id_curs = c.id_curs
+                JOIN Aulas au ON h.id_aula = au.id_aula
+                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN Professors p ON h.id_professor = p.id_professor
+                JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                WHERE c.nom_cicle = ? 
+                AND c.any_academic = ?
+                ORDER BY h.dia, h.hora_inici";
             
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$cicle, $any]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$cicle, $any]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener el horario del curso: " . $e->getMessage());
+        }
+    }
+
+    public function getByCursAndDia($cursComplet, $dia) {
+        try {
+            list($cicle, $any) = explode('-', $cursComplet);
+            $sql = "SELECT 
+                    h.id_horari,
+                    h.hora_inici, 
+                    h.hora_fi, 
+                    h.dia,
+                    c.nom_cicle,
+                    c.any_academic,
+                    au.nom_aula AS aula,
+                    u.nom AS professor, 
+                    a.nom AS assignatura,
+                    h.id_curs
+                FROM Horari h
+                JOIN Cursos c ON h.id_curs = c.id_curs
+                JOIN Aulas au ON h.id_aula = au.id_aula
+                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN Professors p ON h.id_professor = p.id_professor
+                JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                WHERE c.nom_cicle = ? 
+                AND c.any_academic = ?
+                AND h.dia = ?
+                ORDER BY h.hora_inici";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$cicle, $any, $dia]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new Exception("Error al obtener el horario del curso y día: " . $e->getMessage());
+        }
     }
 
     public function getById($id) {

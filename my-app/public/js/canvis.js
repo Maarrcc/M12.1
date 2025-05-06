@@ -57,18 +57,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const cursId = cursSelect.value;
 
         if (dia && cursId) {
-            fetch(`${API_CONFIG.BASE_URL}?controller=canvis&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`, {
-                headers: {
-                    'X-API-Key': API_CONFIG.API_KEY
-                }
-            })
+            fetch(`/M12.1/my-app/public/index.php?controller=canvis&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error en la respuesta del servidor');
                 }
                 return response.json();
             })
-            .then(horaris => {
+            .then(responseData => {
+                if (!responseData.success) {
+                    throw new Error(responseData.message || 'Error desconocido');
+                }
+                const horaris = responseData.data;
                 idHorariSelect.innerHTML = '<option value="">Selecciona un horari</option>';
                 horaris.forEach(horari => {
                     const option = document.createElement('option');

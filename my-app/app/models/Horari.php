@@ -43,13 +43,28 @@ class Horari
 
         $sql = "SELECT 
                 C.*,
+                H.dia,
+                H.hora_inici,
+                H.hora_fi,
                 Cu.nom_cicle,
-                Cu.any_academic
+                Cu.any_academic,
+                A.nom_aula as aula_original,
+                Au.nom_aula as aula_substituta,
+                U1.nom as professor_original,
+                U2.nom as professor_substitut
             FROM Canvis C
+            JOIN Horari H ON C.id_horari = H.id_horari
             JOIN Cursos Cu ON C.id_curs = Cu.id_curs
+            JOIN Aulas A ON H.id_aula = A.id_aula
+            LEFT JOIN Aulas Au ON C.id_aula_substituta = Au.id_aula
+            JOIN Professors P1 ON H.id_professor = P1.id_professor
+            JOIN Usuaris U1 ON P1.id_usuari = U1.id_usuari
+            LEFT JOIN Professors P2 ON C.id_professor_substitut = P2.id_professor
+            LEFT JOIN Usuaris U2 ON P2.id_usuari = U2.id_usuari
             WHERE C.data_canvi BETWEEN ? AND ?
             AND Cu.nom_cicle = ? AND Cu.any_academic = ?
-            AND C.estat = 'actiu'";
+            AND C.estat = 'actiu'
+            ORDER BY C.data_canvi, H.hora_inici";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$start, $end, $cicle, $any]);
