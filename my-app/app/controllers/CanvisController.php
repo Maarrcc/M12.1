@@ -87,6 +87,22 @@ class CanvisController
         exit;
     }
 
+    public function index() {
+        if (!isset($_SESSION['user'])) {
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
+            exit;
+        }
+
+        try {
+            $canvis = $this->canviModel->getAllCanvis();
+            require_once '../app/views/canvis/index.php';
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al cargar los cambios: ' . $e->getMessage();
+            header('Location: /M12.1/my-app/public/index.php');
+            exit;
+        }
+    }
+
     private function enviarNotificacionCambio($data)
     {
         require_once '../vendor/autoload.php';

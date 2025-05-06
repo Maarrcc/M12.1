@@ -8,7 +8,7 @@ function canviarCurs() {
     localStorage.setItem('cicleSeleccionat', cicle);
     localStorage.setItem('anySeleccionat', any);
     
-    // Actualizar el horario con los nuevos parámetros
+    // Actualizar el horario con los nuevos parámetros usando la nueva API
     actualitzaHorari(dates, cursComplet);
 }
 

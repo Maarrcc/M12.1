@@ -68,15 +68,17 @@
                         <option value="Altres">Altres</option>
                     </select>
                 </div>
-
+                <?php
+                $today = date('Y-m-d');
+                ?>
                 <div class="form-group">
                     <label for="data_canvi">Data del canvi:</label>
-                    <input type="date" id="data_canvi" name="data_canvi" required>
+                    <input type="date" id="data_canvi" name="data_canvi" required min="<?php echo $today; ?>">
                 </div>
 
                 <div class="form-group" id="data_fi_group">
                     <label for="data_fi">Data fi:</label>
-                    <input type="date" id="data_fi" name="data_fi">
+                    <input type="date" id="data_fi" name="data_fi" min="<?php echo $today; ?>">
                 </div>
 
                 <div class="form-group field-group" id="professor_group">
@@ -112,7 +114,7 @@
             </form>
         </div>
     </div>
-
+    <script src="/M12.1/my-app/public/js/config.js"></script>
     <script src="/M12.1/my-app/public/js/canvis.js"></script>
 </body>
 

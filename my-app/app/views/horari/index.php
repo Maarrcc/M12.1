@@ -66,9 +66,11 @@
         </div>
     </div>
 
+    <script src="/M12.1/my-app/public/js/config.js"></script>
     <script src="/M12.1/my-app/public/js/horari.js"></script>
     <script src="/M12.1/my-app/public/js/dates.js"></script>
     <script src="/M12.1/my-app/public/js/cursos.js"></script>
+    <script src="/M12.1/my-app/public/js/canvis.js"></script>
 </body>
 
 </html>

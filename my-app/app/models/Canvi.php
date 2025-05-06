@@ -146,4 +146,18 @@ class Canvi {
         $stmt->execute([$idAulaSubstituta, $idProfessorSubstitut, $idHorari]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getAllCanvis() {
+        $sql = "SELECT c.*, 
+                CONCAT(cu.nom_cicle, ' ', cu.any_academic) as curs,
+                h.dia, h.hora_inici, h.hora_fi
+                FROM Canvis c
+                INNER JOIN Horari h ON c.id_horari = h.id_horari
+                INNER JOIN Cursos cu ON c.id_curs = cu.id_curs
+                ORDER BY c.data_canvi DESC, h.hora_inici";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -240,17 +240,20 @@ window.actualitzaHorari = actualitzaHorari;
  */
 async function carregarDades(start, end, cursComplet) {
   try {
-    const response = await fetch(
-      `/M12.1/my-app/public/index.php?controller=horari&action=getHorari&start=${start}&end=${end}&curs=${cursComplet}`
-    );
+    const url = `${API_CONFIG.BASE_URL}?controller=horari&action=getHorari&start=${start}&end=${end}&curs=${cursComplet}`;
+    const response = await fetch(url, {
+      headers: {
+        'X-API-Key': API_CONFIG.API_KEY
+      }
+    });
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
 
-    if (data.error && data.redirect) {
-      window.location.href = data.redirect;
-      return;
+    if (data.error) {
+      throw new Error(data.error);
     }
 
     return data;

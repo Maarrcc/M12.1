@@ -19,15 +19,16 @@ function obtenirDatesSetmana(data) {
   return {
     dilluns: new Date(dilluns),
     divendres: new Date(divendres),
-    formatat: `${dilluns.toLocaleDateString(
-      "ca-ES"
-    )} - ${divendres.toLocaleDateString("ca-ES")}`,
+    formatat: `${dilluns.toLocaleDateString("ca-ES")} - ${divendres.toLocaleDateString("ca-ES")}`,
   };
 }
 
 function actualitzarMostraSetmana() {
   const dates = obtenirDatesSetmana(dataActual);
-  document.getElementById("setmanaActual").textContent = dates.formatat;
+  const setmanaActualElement = document.getElementById("setmanaActual");
+  if (setmanaActualElement) {
+    setmanaActualElement.textContent = dates.formatat;
+  }
   
   if (typeof window.actualitzaHorari === "function") {
     window.actualitzaHorari(dates); // Pasar el objeto completo
@@ -35,18 +36,26 @@ function actualitzarMostraSetmana() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  const setmanaAnterior = document.getElementById("setmanaAnterior");
+  const setmanaSeguent = document.getElementById("setmanaSeguent");
+
+  // Solo agregar listeners si los elementos existen
+  if (setmanaAnterior) {
+    setmanaAnterior.addEventListener("click", () => {
+      dataActual.setDate(dataActual.getDate() - 7);
+      actualitzarMostraSetmana();
+    });
+  }
+
+  if (setmanaSeguent) {
+    setmanaSeguent.addEventListener("click", () => {
+      dataActual.setDate(dataActual.getDate() + 7);
+      actualitzarMostraSetmana();
+    });
+  }
+
   // Asegurar que horari.js se ha cargado
   setTimeout(() => {
     actualitzarMostraSetmana();
   }, 100);
-
-  document.getElementById("setmanaAnterior").addEventListener("click", () => {
-    dataActual.setDate(dataActual.getDate() - 7);
-    actualitzarMostraSetmana();
-  });
-
-  document.getElementById("setmanaSeguent").addEventListener("click", () => {
-    dataActual.setDate(dataActual.getDate() + 7);
-    actualitzarMostraSetmana();
-  });
 });

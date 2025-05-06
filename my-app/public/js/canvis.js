@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si estamos en la página de canvis
+    if (!document.getElementById('selector-curs')) {
+        return; // Si no estamos en la página correcta, no ejecutar el código
+    }
+
     const cursSelect = document.getElementById('selector-curs');
     const diaSelect = document.getElementById('dia');
     const idHorariSelect = document.getElementById('id_horari');
@@ -8,10 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const professorGroup = document.getElementById('professor_group');
     const aulaGroup = document.getElementById('aula_group');
 
-    // Deshabilitar campos inicialmente
+    // Obtener todos los campos del formulario excepto el selector de curso
     const formElements = [
         diaSelect,
-        idHorariSelect,
         tipusCanviSelect,
         document.getElementById('data_canvi'),
         document.getElementById('data_fi'),
@@ -20,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('descripcio_canvi')
     ];
 
+    // Deshabilitar inicialmente todos los campos excepto el selector de curso
     formElements.forEach(element => {
         if (element) {
             element.disabled = true;
@@ -32,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         diaSelect.value = '';
         idHorariSelect.innerHTML = '<option value="">Primer selecciona un dia</option>';
         horariSelector.style.display = 'none';
+        idHorariSelect.disabled = true;
         
         formElements.forEach(element => {
             if (element) {
@@ -47,62 +53,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event listener para cambio de día
     diaSelect.addEventListener('change', function() {
-        const dia = this.value;
+        const dia = diaSelect.value;
         const cursId = cursSelect.value;
 
-        if (!cursId) {
-            alert('Si us plau, selecciona primer un curs');
-            this.value = '';
-            return;
-        }
-
-        if (dia) {
-            fetch(`/M12.1/my-app/public/index.php?controller=canvis&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Error en la respuesta del servidor');
-                    }
-                    return response.json();
-                })
-                .then(horaris => {
-                    idHorariSelect.innerHTML = '<option value="">Selecciona un horari</option>';
-                    horaris.forEach(horari => {
-                        const option = document.createElement('option');
-                        option.value = horari.id_horari;
-                        option.dataset.idCurs = horari.id_curs;
-                        option.textContent = `${horari.hora_inici} - ${horari.hora_fi} | ${horari.assignatura} - ${horari.professor} - ${horari.nom_aula}`;
-                        idHorariSelect.appendChild(option);
-                    });
-                    horariSelector.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al cargar los horarios');
+        if (dia && cursId) {
+            fetch(`${API_CONFIG.BASE_URL}?controller=canvis&action=getHorarisByCurs&curs=${cursId}&dia=${dia}`, {
+                headers: {
+                    'X-API-Key': API_CONFIG.API_KEY
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error en la respuesta del servidor');
+                }
+                return response.json();
+            })
+            .then(horaris => {
+                idHorariSelect.innerHTML = '<option value="">Selecciona un horari</option>';
+                horaris.forEach(horari => {
+                    const option = document.createElement('option');
+                    option.value = horari.id_horari;
+                    option.dataset.idCurs = horari.id_curs;
+                    option.textContent = `${horari.hora_inici} - ${horari.hora_fi} | ${horari.assignatura} - ${horari.professor} - ${horari.nom_aula}`;
+                    idHorariSelect.appendChild(option);
                 });
+                horariSelector.style.display = 'block';
+                idHorariSelect.disabled = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al cargar los horarios');
+            });
+        } else {
+            horariSelector.style.display = 'none';
+            idHorariSelect.disabled = true;
         }
     });
 
     // Gestionar campos según tipo de cambio
     tipusCanviSelect.addEventListener('change', function() {
         const tipusCanvi = this.value;
+        const professorSubstitutGroup = professorGroup;
+        const aulaSubstitutaGroup = aulaGroup;
         
-        // Mostrar todos los campos primero
-        professorGroup.style.display = 'block';
-        aulaGroup.style.display = 'block';
+        // Ocultar todos los campos opcionales
+        professorSubstitutGroup.style.display = 'none';
+        aulaSubstitutaGroup.style.display = 'none';
         
-        // Ocultar según el tipo
-        switch(tipusCanvi) {
-            case 'Absència professor':
-            case 'Canvi professor':
-                aulaGroup.style.display = 'none';
-                break;
-            case 'Canvi aula':
-                professorGroup.style.display = 'none';
-                break;
-            case 'Classe cancelada':
-                professorGroup.style.display = 'none';
-                aulaGroup.style.display = 'none';
-                break;
+        // Restablecer required y disabled
+        const professorSubstitutSelect = document.getElementById('id_professor_substitut');
+        const aulaSubstitutaSelect = document.getElementById('id_aula_substituta');
+        
+        professorSubstitutSelect.required = false;
+        aulaSubstitutaSelect.required = false;
+        
+        // Mostrar campos según el tipo de cambio
+        if (tipusCanvi === 'Canvi professor') {
+            professorSubstitutGroup.style.display = 'block';
+            professorSubstitutSelect.required = true;
+        } else if (tipusCanvi === 'Canvi aula') {
+            aulaSubstitutaGroup.style.display = 'block';
+            aulaSubstitutaSelect.required = true;
         }
     });
 });
