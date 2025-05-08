@@ -203,6 +203,18 @@ class CanvisController
 
     public function getHorarisByCurs()
     {
+        // Permitir acceso con API Key
+        $API_KEY = 'ApiPrueba';
+        $apiKeyHeader = $_SERVER['HTTP_X_API_KEY'] ?? '';
+        if ($apiKeyHeader !== $API_KEY) {
+            // Si no hay API key válida, comprobar sesión normal
+            if (!isset($_SESSION['user'])) {
+                http_response_code(401);
+                echo json_encode(['error' => 'No autorizado']);
+                return;
+            }
+        }
+
         if (!isset($_GET['curs']) || !isset($_GET['dia'])) {
             http_response_code(400);
             echo json_encode(['error' => 'Faltan parámetros requeridos']);

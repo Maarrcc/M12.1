@@ -119,4 +119,39 @@ class AssignaturesAlumnes {
         $stmt->execute(['id_usuari' => $idUsuari]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function getAlumneIdByUserId($userId) {
+        $sql = "SELECT id_alumne FROM Alumnes WHERE id_usuari = ?";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$userId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['id_alumne'] : null;
+    }
+
+    public function getMatriculesAlumne($idAlumne) {
+        $sql = "SELECT aa.*, a.nom as nom_assignatura, u.nom as nom_complet 
+                FROM Assignatures_Alumnes aa
+                INNER JOIN Assignatures a ON aa.id_assignatura = a.id_assignatura
+                INNER JOIN Alumnes al ON aa.id_alumne = al.id_alumne
+                INNER JOIN Usuaris u ON al.id_usuari = u.id_usuari
+                WHERE aa.id_alumne = ?";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$idAlumne]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAssignaturesDisponibles($idAlumne) {
+        $sql = "SELECT a.* 
+                FROM Assignatures a
+                WHERE a.id_assignatura NOT IN (
+                    SELECT id_assignatura 
+                    FROM Assignatures_Alumnes 
+                    WHERE id_alumne = ?
+                )";
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$idAlumne]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

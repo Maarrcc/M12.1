@@ -23,24 +23,26 @@ class AssignaturesAlumnesController {
             $isAdmin = $_SESSION['user']['rol'] === 'admin';
             $currentUserId = $_SESSION['user']['id_usuari'];
             
-            // Si es admin, obtiene todas las matrículas, si no, solo las del usuario
-            $matricules = $this->model->getAllMatricules($isAdmin ? null : $currentUserId);
-            
-            // Verificar si el usuario es alumno y obtener su curso
-            $curs = null;
+            // Si es alumno, obtener primero su ID de alumno
             if ($_SESSION['user']['rol'] === 'alumne') {
-                $curs = $this->model->getCursByAlumne($currentUserId);
-                if (!$curs) {
-                    $_SESSION['error'] = 'No estàs matriculat en cap curs';
+                $alumneId = $this->model->getAlumneIdByUserId($currentUserId);
+                if (!$alumneId) {
+                    $_SESSION['error'] = 'No s\'ha trobat el teu registre d\'alumne';
                     require_once '../app/views/matricules/assign.php';
                     return;
                 }
-                $assignatures = $this->model->getAssignaturesByCurs($curs['id_curs']);
+                $matricules = $this->model->getMatriculesAlumne($alumneId);
+                $assignatures = $this->model->getAssignaturesDisponibles($alumneId);
+                // Añadir el ID del alumno a las variables
+                $currentAlumneId = $alumneId;
             } else {
+                // Si es admin, obtener todas las matrículas
+                $matricules = $this->model->getAllMatricules();
                 $assignatures = $this->model->getAllAssignatures();
             }
-
+            
             $alumnes = $isAdmin ? $this->model->getAllAlumnes() : [];
+            $curs = true; // Para que se muestre el formulario de gestión
             
             require_once '../app/views/matricules/assign.php';
         } catch (Exception $e) {

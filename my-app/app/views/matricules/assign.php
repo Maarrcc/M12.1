@@ -74,6 +74,37 @@
             </div>
             <?php endif; ?>
 
+            <?php if ($_SESSION['user']['rol'] === 'alumne'): ?>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Les Meves Assignatures</h4>
+                </div>
+                <div class="card-body">
+                    <form action="/M12.1/my-app/public/index.php?controller=assignaturesAlumnes&action=store" method="POST">
+                        <div class="form-group mb-3">
+                            <label>Noves Subscripcions:</label>
+                            <div class="assignatures-grid">
+                                <?php foreach ($assignatures as $assignatura): ?>
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               name="assignatures[<?= $assignatura['id_assignatura'] ?>][id]" 
+                                               value="<?= $assignatura['id_assignatura'] ?>" 
+                                               class="form-check-input"
+                                               id="ass_<?= $assignatura['id_assignatura'] ?>">
+                                        <label class="form-check-label" for="ass_<?= $assignatura['id_assignatura'] ?>">
+                                            <?= htmlspecialchars($assignatura['nom']) ?>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <input type="hidden" name="id_alumne" value="<?= $currentAlumneId ?>">
+                        <button type="submit" class="btn btn-primary">Afegir Subscripcions</button>
+                    </form>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <div class="card">
                 <div class="card-header"></div>
                     <h4><?= $_SESSION['user']['rol'] === 'admin' ? 'Totes les Preferències' : 'Les Meves Preferències' ?></h4>
