@@ -1,50 +1,46 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="ca">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API Documentation - EduPlanner</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        .endpoint { margin-bottom: 2rem; }
-        .method { font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; }
-        .GET { background-color: #28a74520; color: #28a745; }
-        .POST { background-color: #007bff20; color: #007bff; }
-        .PUT { background-color: #ffc10720; color: #ffc107; }
-        .DELETE { background-color: #dc354520; color: #dc3545; }
-        pre { border-radius: 4px; }
-        .response-example { margin-top: 1rem; }
-    </style>
+    <title>Documentació de l'API - EduPlanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container py-5">
-        <h1>API Documentation - EduPlanner</h1>
-        <p class="lead">API para la gestión de horarios escolares</p>
 
-        <div class="alert alert-info">
-            <h4 class="alert-heading">Autenticación Requerida</h4>
-            <p>Todas las peticiones a la API requieren una API Key válida en el header <code>X-API-Key</code>.</p>
-            <hr>
-            <p class="mb-0">API Key de ejemplo: <code>ApiPrueba</code></p>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-10 px-4">
+        <h1 class="text-4xl font-bold mb-4">Documentació de l'API - EduPlanner</h1>
+        <p class="text-xl text-gray-600 mb-8">API per a la gestió d'horaris escolars</p>
+
+        <div class="bg-blue-100 border-l-4 border-blue-500 p-4 mb-8">
+            <h4 class="text-lg font-semibold text-blue-800">Autenticació Requerida</h4>
+            <p class="text-blue-700">Totes les peticions a l'API requereixen una clau API vàlida a la capçalera <code
+                    class="bg-blue-200 px-1 rounded">X-API-Key</code>.</p>
+            <hr class="my-2">
+            <p class="text-blue-700 mb-0">Exemple de clau API: <code class="bg-blue-200 px-1 rounded">ApiProva</code>
+            </p>
         </div>
 
-        <h2 class="mt-5">Endpoints Disponibles</h2>
+        <h2 class="text-2xl font-bold mt-10 mb-4">Punts Finals Disponibles</h2>
 
         <!-- GET /horari -->
-        <div class="endpoint">
-            <h3><span class="method GET">GET</span> /horari</h3>
-            <p>Obtiene los horarios del sistema.</p>
-            
-            <h4>Parámetros de consulta:</h4>
-            <ul>
-                <li><code>curs</code> (opcional) - Filtrar por curso (ej: "DAW-Primer")</li>
-                <li><code>dia</code> (opcional) - Filtrar por día (ej: "Dilluns")</li>
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold">
+                <span class="font-bold px-2 py-1 rounded text-green-700 bg-green-200">GET</span> /horari
+            </h3>
+            <p class="text-gray-700">Obté els horaris del sistema.</p>
+
+            <h4 class="text-lg font-semibold mt-4">Paràmetres de consulta:</h4>
+            <ul class="list-disc pl-5 text-gray-700">
+                <li><code class="bg-gray-200 px-1 rounded">curs</code> (opcional) - Filtrar per curs (ex: "DAW-Primer")
+                </li>
+                <li><code class="bg-gray-200 px-1 rounded">dia</code> (opcional) - Filtrar per dia (ex: "Dilluns")</li>
             </ul>
 
-            <div class="response-example">
-                <h5>Ejemplo de respuesta:</h5>
-                <pre class="bg-light p-3">
+            <div class="mt-4">
+                <h5 class="text-md font-semibold">Exemple de resposta:</h5>
+                <pre class="bg-gray-50 p-4 rounded-lg text-gray-800">
 {
     "success": true,
     "data": [
@@ -62,28 +58,29 @@
             </div>
         </div>
 
-        <!-- Ejemplos prácticos -->
-        <h2 class="mt-5">Ejemplos de Uso</h2>
-        
-        <h4>Con cURL:</h4>
-        <pre class="bg-light p-3">
-curl -H "X-API-Key: ApiPrueba" http://localhost/M12.1/API/public/horari?curs=DAW-Primer</pre>
-        
-        <h4>Con Postman:</h4>
-        <pre class="bg-light p-3">
+        <!-- Exemples pràctics -->
+        <h2 class="text-2xl font-bold mt-10 mb-4">Exemples d'Ús</h2>
+
+        <h4 class="text-lg font-semibold">Amb cURL:</h4>
+        <pre class="bg-gray-50 p-4 rounded-lg text-gray-800">
+curl -H "X-API-Key: ApiProva" http://localhost/M12.1/API/public/horari?curs=DAW-Primer</pre>
+
+        <h4 class="text-lg font-semibold mt-4">Amb Postman:</h4>
+        <pre class="bg-gray-50 p-4 rounded-lg text-gray-800">
 GET http://localhost/M12.1/API/public/horari?curs=DAW-Primer
 Headers:
-    X-API-Key: ApiPrueba</pre>
+    X-API-Key: ApiProva</pre>
 
-        <h4>Con JavaScript (Fetch):</h4>
-        <pre class="bg-light p-3">
+        <h4 class="text-lg font-semibold mt-4">Amb JavaScript (Fetch):</h4>
+        <pre class="bg-gray-50 p-4 rounded-lg text-gray-800">
 fetch('http://localhost/M12.1/API/public/horari?curs=DAW-Primer', {
     headers: {
-        'X-API-Key': 'ApiPrueba'
+        'X-API-Key': 'ApiProva'
     }
 })
 .then(response => response.json())
 .then(data => console.log(data));</pre>
     </div>
 </body>
+
 </html>
