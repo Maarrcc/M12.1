@@ -1,4 +1,24 @@
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php/$1 [L,QSA]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /M12.1/API/public/
+    
+    # Permitir CORS preflight
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ $1 [R=200,L]
+    
+    # Redirigir todas las solicitudes a index.php
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [QSA,L]
+
+    # Configurar tipos MIME
+    AddType application/json .json
+    AddType text/javascript .js
+    AddType text/css .css
+</IfModule>
+
+# Headers CORS
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-API-Key"
+Header set Access-Control-Max-Age "3600"
