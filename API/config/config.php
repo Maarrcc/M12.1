@@ -1,13 +1,6 @@
 <?php
-define('DEBUG_MODE', true); 
-
-// Configuración de la base de datos
-return [
-    'db' => [
-        'host' => 'localhost',
-        'dbname' => 'horari',
-        'user' => 'root',
-        'password' => 'root'
-    ],
-    'api_key' => 'ApiPrueba'
-];
+define('API_KEY', 'ApiPrueba'); 
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'horari');
+define('DB_USER', 'root');
+define('DB_PASS', 'root');

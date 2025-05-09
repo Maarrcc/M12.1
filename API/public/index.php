@@ -1,4 +1,9 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
 // Configuración de CORS y headers
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     header('Access-Control-Allow-Origin: *');
@@ -68,6 +73,5 @@ try {
     echo json_encode([
         'success' => false,
         'message' => $e->getMessage(),
-        'trace' => DEBUG_MODE ? $e->getTraceAsString() : null
     ]);
 }
