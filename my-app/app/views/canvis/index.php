@@ -39,6 +39,7 @@
                             <th>Data Inici</th>
                             <th>Data Fi</th>
                             <th>Estat</th>
+                            <th>Accions</th> 
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +55,14 @@
                                     <span class="badge <?php echo $canvi['estat'] === 'actiu' ? 'badge-success' : 'badge-inactive'; ?>">
                                         <?php echo htmlspecialchars($canvi['estat']); ?>
                                     </span>
+                                </td>
+                                <td>
+                                    <form action="/M12.1/my-app/public/index.php?controller=canvis&action=delete" method="POST" style="display: inline;">
+                                        <input type="hidden" name="id_canvi" value="<?php echo $canvi['id_canvi']; ?>">
+                                        <button type="submit" class="btn-delete" onclick="return confirm('Estàs segur que vols eliminar aquest canvi?')">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

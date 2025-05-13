@@ -12,11 +12,11 @@ class Canvi {
                        a.nom as assignatura, u.nom as professor, 
                        c.nom_cicle, c.any_academic, au.nom_aula
                 FROM Horari h
-                INNER JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                INNER JOIN Professors p ON h.id_professor = p.id_professor
-                INNER JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                INNER JOIN Cursos c ON h.id_curs = c.id_curs
-                INNER JOIN Aulas au ON h.id_aula = au.id_aula
+                INNER JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                INNER JOIN professors p ON h.id_professor = p.id_professor
+                INNER JOIN usuaris u ON p.id_usuari = u.id_usuari
+                INNER JOIN cursos c ON h.id_curs = c.id_curs
+                INNER JOIN aulas au ON h.id_aula = au.id_aula
                 ORDER BY FIELD(h.dia, 'Dilluns', 'Dimarts', 'Dimecres', 'Dijous', 'Divendres'),
                          h.hora_inici";
         $stmt = $this->pdo->prepare($sql);
@@ -26,8 +26,8 @@ class Canvi {
 
     public function getProfessors() {
         $sql = "SELECT p.id_professor, u.nom 
-                FROM Professors p 
-                INNER JOIN Usuaris u ON p.id_usuari = u.id_usuari 
+                FROM professors p 
+                INNER JOIN usuaris u ON p.id_usuari = u.id_usuari 
                 WHERE u.rol = 'professor'
                 ORDER BY u.nom";
         $stmt = $this->pdo->prepare($sql);
@@ -36,7 +36,7 @@ class Canvi {
     }
 
     public function getAules() {
-        $sql = "SELECT * FROM Aulas ORDER BY nom_aula";
+        $sql = "SELECT * FROM aulas ORDER BY nom_aula";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -44,7 +44,7 @@ class Canvi {
 
     public function insertCanvi($data) {
         try {
-            $sql = "INSERT INTO Canvis (id_horari, id_curs, tipus_canvi, data_canvi, 
+            $sql = "INSERT INTO canvis (id_horari, id_curs, tipus_canvi, data_canvi, 
                     data_fi, id_professor_substitut, id_aula_substituta, descripcio_canvi, estat) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'actiu')";
             
@@ -65,7 +65,7 @@ class Canvi {
     }
 
     public function getCursos() {
-        $sql = "SELECT * FROM Cursos ORDER BY nom_cicle, any_academic";
+        $sql = "SELECT * FROM cursos ORDER BY nom_cicle, any_academic";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -76,12 +76,12 @@ class Canvi {
                        a.nom as assignatura, u.nom as professor, 
                        au.nom_aula, c.nom_cicle, c.any_academic,
                        h.id_curs, CONCAT(c.nom_cicle, ' ', c.any_academic) as curs_complet
-                FROM Horari h
-                INNER JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                INNER JOIN Professors p ON h.id_professor = p.id_professor
-                INNER JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                INNER JOIN Cursos c ON h.id_curs = c.id_curs
-                INNER JOIN Aulas au ON h.id_aula = au.id_aula
+                FROM horari h
+                INNER JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                INNER JOIN professors p ON h.id_professor = p.id_professor
+                INNER JOIN usuaris u ON p.id_usuari = u.id_usuari
+                INNER JOIN cursos c ON h.id_curs = c.id_curs
+                INNER JOIN aulas au ON h.id_aula = au.id_aula
                 WHERE h.dia = ?
                 ORDER BY c.nom_cicle, c.any_academic, h.hora_inici";
         
@@ -94,8 +94,8 @@ class Canvi {
     public function getCursosDisponibles() {
         $sql = "SELECT DISTINCT c.id_curs, c.nom_cicle, c.any_academic,
                        CONCAT(c.nom_cicle, ' ', c.any_academic) as nom_complet
-                FROM Cursos c
-                INNER JOIN Horari h ON c.id_curs = h.id_curs
+                FROM cursos c
+                INNER JOIN horari h ON c.id_curs = h.id_curs
                 ORDER BY c.nom_cicle, c.any_academic";
         
         $stmt = $this->pdo->prepare($sql);
@@ -108,12 +108,12 @@ class Canvi {
                        a.nom as assignatura, u.nom as professor, 
                        au.nom_aula, c.nom_cicle, c.any_academic,
                        h.id_curs
-                FROM Horari h
-                INNER JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                INNER JOIN Professors p ON h.id_professor = p.id_professor
-                INNER JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                INNER JOIN Cursos c ON h.id_curs = c.id_curs
-                INNER JOIN Aulas au ON h.id_aula = au.id_aula
+                FROM horari h
+                INNER JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                INNER JOIN professors p ON h.id_professor = p.id_professor
+                INNER JOIN usuaris u ON p.id_usuari = u.id_usuari
+                INNER JOIN cursos c ON h.id_curs = c.id_curs
+                INNER JOIN aulas au ON h.id_aula = au.id_aula
                 WHERE h.id_curs = ?
                 ORDER BY h.dia, h.hora_inici";
         
@@ -129,17 +129,17 @@ class Canvi {
             a.nom as assignatura,
             u.nom as professor,
             au.nom_aula as aula_original,
-            (SELECT nom_aula FROM Aulas WHERE id_aula = ?) as aula_substituta,
+            (SELECT nom_aula FROM aulas WHERE id_aula = ?) as aula_substituta,
             (SELECT u2.nom 
-             FROM Professors p2 
-             JOIN Usuaris u2 ON p2.id_usuari = u2.id_usuari 
+             FROM professors p2 
+             JOIN usuaris u2 ON p2.id_usuari = u2.id_usuari 
              WHERE p2.id_professor = ?) as professor_substitut
-            FROM Horari h
-            JOIN Cursos c ON h.id_curs = c.id_curs
-            JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-            JOIN Professors p ON h.id_professor = p.id_professor
-            JOIN Usuaris u ON p.id_usuari = u.id_usuari
-            JOIN Aulas au ON h.id_aula = au.id_aula
+            FROM horari h
+            JOIN cursos c ON h.id_curs = c.id_curs
+            JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+            JOIN professors p ON h.id_professor = p.id_professor
+            JOIN usuaris u ON p.id_usuari = u.id_usuari
+            JOIN aulas au ON h.id_aula = au.id_aula
             WHERE h.id_horari = ?";
 
         $stmt = $this->pdo->prepare($sql);
@@ -151,13 +151,23 @@ class Canvi {
         $sql = "SELECT c.*, 
                 CONCAT(cu.nom_cicle, ' ', cu.any_academic) as curs,
                 h.dia, h.hora_inici, h.hora_fi
-                FROM Canvis c
-                INNER JOIN Horari h ON c.id_horari = h.id_horari
-                INNER JOIN Cursos cu ON c.id_curs = cu.id_curs
+                FROM canvis c
+                INNER JOIN horari h ON c.id_horari = h.id_horari
+                INNER JOIN cursos cu ON c.id_curs = cu.id_curs
                 ORDER BY c.data_canvi DESC, h.hora_inici";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function delete($id) {
+        try {
+            $sql = "DELETE FROM canvis WHERE id_canvi = ?";
+            $stmt = $this->pdo->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (PDOException $e) {
+            throw new Exception("Error al eliminar el canvi: " . $e->getMessage());
+        }
     }
 }

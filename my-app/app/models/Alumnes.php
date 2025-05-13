@@ -8,7 +8,7 @@ class Alumne {
     }
 
     private function countCursosAlumne($id_usuari) {
-        $sql = "SELECT COUNT(*) FROM Alumnes WHERE id_usuari = ?";
+        $sql = "SELECT COUNT(*) FROM alumnes WHERE id_usuari = ?";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id_usuari]);
         return $stmt->fetchColumn();
@@ -17,7 +17,7 @@ class Alumne {
     public function assignUsuariToAlumne($id_usuari, $id_curs) {
         try {
             // Verificar que el usuario existe y tenga el rol correcto
-            $stmt = $this->pdo->prepare("SELECT rol FROM Usuaris WHERE id_usuari = ?");
+            $stmt = $this->pdo->prepare("SELECT rol FROM usuaris WHERE id_usuari = ?");
             $stmt->execute([$id_usuari]);
             $usuari = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -36,14 +36,14 @@ class Alumne {
             }
 
             // Verificar que no esté ya asignado a este curso específico
-            $stmt = $this->pdo->prepare("SELECT id_alumne FROM Alumnes WHERE id_usuari = ? AND id_curs = ?");
+            $stmt = $this->pdo->prepare("SELECT id_alumne FROM alumnes WHERE id_usuari = ? AND id_curs = ?");
             $stmt->execute([$id_usuari, $id_curs]);
             if ($stmt->fetch()) {
                 throw new Exception("L'alumne ja està assignat a aquest curs");
             }
 
             // Verificar que el curso exista
-            $stmt = $this->pdo->prepare("SELECT id_curs FROM Cursos WHERE id_curs = ?");
+            $stmt = $this->pdo->prepare("SELECT id_curs FROM cursos WHERE id_curs = ?");
             $stmt->execute([$id_curs]);
             if (!$stmt->fetch()) {
                 throw new Exception("El curs seleccionat no existeix");
@@ -52,7 +52,7 @@ class Alumne {
             // Insertar nuevo alumno
             $this->pdo->beginTransaction();
             
-            $sql = "INSERT INTO Alumnes (id_usuari, id_curs) VALUES (?, ?)";
+            $sql = "INSERT INTO alumnes (id_usuari, id_curs) VALUES (?, ?)";
             $stmt = $this->pdo->prepare($sql);
             $result = $stmt->execute([$id_usuari, $id_curs]);
             

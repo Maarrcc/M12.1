@@ -11,7 +11,7 @@ class Aula
 
     public function create($nom_aula, $capacitat)
     {
-        $sql = "INSERT INTO Aulas (nom_aula, capacitat) VALUES (:nom_aula, :capacitat)";
+        $sql = "INSERT INTO aulas (nom_aula, capacitat) VALUES (:nom_aula, :capacitat)";
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute([

@@ -29,8 +29,8 @@ class AlumnesController {
         if ($_SESSION['user']['rol'] === 'alumne') {
             $stmt = $this->pdo->prepare("
                 SELECT c.* 
-                FROM Cursos c 
-                JOIN Alumnes a ON c.id_curs = a.id_curs 
+                FROM cursos c 
+                JOIN alumnes a ON c.id_curs = a.id_curs 
                 WHERE a.id_usuari = ?
             ");
             $stmt->execute([$_SESSION['user']['id_usuari']]);

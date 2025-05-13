@@ -11,13 +11,13 @@ class Assignatura
 
     public function getAll()
     {
-        $stmt = $this->pdo->query("SELECT * FROM Assignatures");
+        $stmt = $this->pdo->query("SELECT * FROM assignatures");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function create($assignatura)
     {
-        $sql = "INSERT INTO Assignatures (nom, descripcio, hores) VALUES (:nom, :descripcio, :hores)";
+        $sql = "INSERT INTO assignatures (nom, descripcio, hores) VALUES (:nom, :descripcio, :hores)";
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute([

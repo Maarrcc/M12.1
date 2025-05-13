@@ -14,12 +14,12 @@ class Horari {
                         a.nom AS assignatura,
                         u.nom as professor,
                         au.nom_aula as aula
-                    FROM Horari h
-                    JOIN Cursos c ON h.id_curs = c.id_curs
-                    JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                    JOIN Professors p ON h.id_professor = p.id_professor
-                    JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                    JOIN Aulas au ON h.id_aula = au.id_aula
+                    FROM horari h
+                    JOIN cursos c ON h.id_curs = c.id_curs
+                    JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                    JOIN professors p ON h.id_professor = p.id_professor
+                    JOIN usuaris u ON p.id_usuari = u.id_usuari
+                    JOIN aulas au ON h.id_aula = au.id_aula
                     ORDER BY c.nom_cicle, c.any_academic, h.dia, h.hora_inici";
             
             $stmt = $this->pdo->query($sql);
@@ -43,12 +43,12 @@ class Horari {
                     au.nom_aula AS aula,
                     u.nom AS professor, 
                     a.nom AS assignatura
-                FROM Horari h
-                JOIN Cursos c ON h.id_curs = c.id_curs
-                JOIN Aulas au ON h.id_aula = au.id_aula
-                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                JOIN Professors p ON h.id_professor = p.id_professor
-                JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                FROM horari h
+                JOIN cursos c ON h.id_curs = c.id_curs
+                JOIN aulas au ON h.id_aula = au.id_aula
+                JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN professors p ON h.id_professor = p.id_professor
+                JOIN usuaris u ON p.id_usuari = u.id_usuari
                 WHERE c.nom_cicle = ? 
                 AND c.any_academic = ?
                 ORDER BY h.dia, h.hora_inici";
@@ -75,12 +75,12 @@ class Horari {
                     u.nom AS professor, 
                     a.nom AS assignatura,
                     h.id_curs
-                FROM Horari h
-                JOIN Cursos c ON h.id_curs = c.id_curs
-                JOIN Aulas au ON h.id_aula = au.id_aula
-                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                JOIN Professors p ON h.id_professor = p.id_professor
-                JOIN Usuaris u ON p.id_usuari = u.id_usuari
+                FROM horari h
+                JOIN cursos c ON h.id_curs = c.id_curs
+                JOIN sulas au ON h.id_aula = au.id_aula
+                JOIN sssignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN professors p ON h.id_professor = p.id_professor
+                JOIN usuaris u ON p.id_usuari = u.id_usuari
                 WHERE c.nom_cicle = ? 
                 AND c.any_academic = ?
                 AND h.dia = ?
@@ -100,12 +100,12 @@ class Horari {
                        au.nom_aula as aula,
                        c.nom_cicle,
                        c.any_academic
-                FROM Horari h
-                JOIN Assignatures a ON h.id_assignatura = a.id_assignatura
-                JOIN Professors p ON h.id_professor = p.id_professor
-                JOIN Usuaris u ON p.id_usuari = u.id_usuari
-                JOIN Aulas au ON h.id_aula = au.id_aula
-                JOIN Cursos c ON h.id_curs = c.id_curs
+                FROM horari h
+                JOIN assignatures a ON h.id_assignatura = a.id_assignatura
+                JOIN professors p ON h.id_professor = p.id_professor
+                JOIN usuaris u ON p.id_usuari = u.id_usuari
+                JOIN aulas au ON h.id_aula = au.id_aula
+                JOIN cursos c ON h.id_curs = c.id_curs
                 WHERE h.id_horari = ?";
         
         $stmt = $this->pdo->prepare($sql);
@@ -114,7 +114,7 @@ class Horari {
     }
 
     public function create($data) {
-        $sql = "INSERT INTO Horari (id_assignatura, id_professor, id_aula, id_curs, dia, hora_inici, hora_fi) 
+        $sql = "INSERT INTO horari (id_assignatura, id_professor, id_aula, id_curs, dia, hora_inici, hora_fi) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try {
@@ -135,7 +135,7 @@ class Horari {
     }
 
     public function update($id, $data) {
-        $sql = "UPDATE Horari 
+        $sql = "UPDATE horari 
                 SET id_assignatura = ?, 
                     id_professor = ?, 
                     id_aula = ?, 
@@ -164,7 +164,7 @@ class Horari {
 
     public function delete($id) {
         try {
-            $sql = "DELETE FROM Horari WHERE id_horari = ?";
+            $sql = "DELETE FROM horari WHERE id_horari = ?";
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$id]);
         } catch (PDOException $e) {

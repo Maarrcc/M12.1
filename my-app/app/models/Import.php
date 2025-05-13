@@ -18,7 +18,7 @@ class Import {
             }
             
             // Verificar si el usuario ya existe
-            $stmt = $this->pdo->prepare("SELECT id_usuari FROM Usuaris WHERE nom_usuari = ? OR email = ?");
+            $stmt = $this->pdo->prepare("SELECT id_usuari FROM usuaris WHERE nom_usuari = ? OR email = ?");
             $stmt->execute([$data[0], $data[2]]);
             if ($stmt->fetch()) {
                 error_log("Usuario ya existe: " . $data[0]);
@@ -28,7 +28,7 @@ class Import {
             // Usar password_hash
             $hashedPassword = password_hash($data[3], PASSWORD_DEFAULT);
             
-            $sql = "INSERT INTO Usuaris (nom_usuari, nom, email, contrasenya, rol) 
+            $sql = "INSERT INTO usuaris (nom_usuari, nom, email, contrasenya, rol) 
                     VALUES (?, ?, ?, ?, ?)";
             $stmt = $this->pdo->prepare($sql);
             
@@ -54,7 +54,7 @@ class Import {
 
     public function importarAlumne($idUsuari, $idCurs) {
         try {
-            $sql = "INSERT INTO Alumnes (id_usuari, id_curs) VALUES (?, ?)";
+            $sql = "INSERT INTO alumnes (id_usuari, id_curs) VALUES (?, ?)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$idUsuari, $idCurs]);
             return true;
@@ -65,7 +65,7 @@ class Import {
 
     public function importarProfessor($idUsuari) {
         try {
-            $sql = "INSERT INTO Professors (id_usuari) VALUES (?)";
+            $sql = "INSERT INTO professors (id_usuari) VALUES (?)";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$idUsuari]);
             return true;

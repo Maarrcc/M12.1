@@ -244,4 +244,27 @@ class CanvisController
             echo json_encode(['error' => $e->getMessage()]);
         }
     }
+
+    public function delete() {
+        if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                $id = $_POST['id_canvi'];
+                if ($this->canviModel->delete($id)) {
+                    $_SESSION['success'] = 'Canvi eliminat correctament';
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar el canvi';
+                }
+            } catch (Exception $e) {
+                $_SESSION['error'] = 'Error al eliminar el canvi: ' . $e->getMessage();
+            }
+            
+            header('Location: /M12.1/my-app/public/index.php?controller=canvis&action=index');
+            exit;
+        }
+    }
 }

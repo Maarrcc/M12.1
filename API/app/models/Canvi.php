@@ -19,16 +19,16 @@ class Canvi {
             u1.nom as professor_original,
             u2.nom as professor_substitut,
             asig.nom as assignatura
-            FROM Canvis c
-            INNER JOIN Horari h ON c.id_horari = h.id_horari
-            INNER JOIN Cursos cu ON c.id_curs = cu.id_curs
-            INNER JOIN Aulas a ON h.id_aula = a.id_aula
-            LEFT JOIN Aulas au ON c.id_aula_substituta = au.id_aula
-            INNER JOIN Professors p1 ON h.id_professor = p1.id_professor
-            INNER JOIN Usuaris u1 ON p1.id_usuari = u1.id_usuari
-            LEFT JOIN Professors p2 ON c.id_professor_substitut = p2.id_professor
-            LEFT JOIN Usuaris u2 ON p2.id_usuari = u2.id_usuari
-            INNER JOIN Assignatures asig ON h.id_assignatura = asig.id_assignatura
+            FROM canvis c
+            INNER JOIN horari h ON c.id_horari = h.id_horari
+            INNER JOIN cursos cu ON c.id_curs = cu.id_curs
+            INNER JOIN aulas a ON h.id_aula = a.id_aula
+            LEFT JOIN aulas au ON c.id_aula_substituta = au.id_aula
+            INNER JOIN professors p1 ON h.id_professor = p1.id_professor
+            INNER JOIN usuaris u1 ON p1.id_usuari = u1.id_usuari
+            LEFT JOIN professors p2 ON c.id_professor_substitut = p2.id_professor
+            LEFT JOIN usuaris u2 ON p2.id_usuari = u2.id_usuari
+            INNER JOIN assignatures asig ON h.id_assignatura = asig.id_assignatura
             WHERE c.estat = 'actiu'
             ORDER BY c.data_canvi DESC, h.hora_inici";
         
@@ -56,16 +56,16 @@ class Canvi {
             u1.nom as professor_original,
             u2.nom as professor_substitut,
             asig.nom as assignatura
-            FROM Canvis c
-            INNER JOIN Horari h ON c.id_horari = h.id_horari
-            INNER JOIN Cursos cu ON c.id_curs = cu.id_curs
-            INNER JOIN Aulas a ON h.id_aula = a.id_aula
-            LEFT JOIN Aulas au ON c.id_aula_substituta = au.id_aula
-            INNER JOIN Professors p1 ON h.id_professor = p1.id_professor
-            INNER JOIN Usuaris u1 ON p1.id_usuari = u1.id_usuari
-            LEFT JOIN Professors p2 ON c.id_professor_substitut = p2.id_professor
-            LEFT JOIN Usuaris u2 ON p2.id_usuari = u2.id_usuari
-            INNER JOIN Assignatures asig ON h.id_assignatura = asig.id_assignatura
+            FROM canvis c
+            INNER JOIN horari h ON c.id_horari = h.id_horari
+            INNER JOIN cursos cu ON c.id_curs = cu.id_curs
+            INNER JOIN aulas a ON h.id_aula = a.id_aula
+            LEFT JOIN aulas au ON c.id_aula_substituta = au.id_aula
+            INNER JOIN professors p1 ON h.id_professor = p1.id_professor
+            INNER JOIN usuaris u1 ON p1.id_usuari = u1.id_usuari
+            LEFT JOIN professors p2 ON c.id_professor_substitut = p2.id_professor
+            LEFT JOIN usuaris u2 ON p2.id_usuari = u2.id_usuari
+            INNER JOIN assignatures asig ON h.id_assignatura = asig.id_assignatura
             WHERE cu.nom_cicle = ?
             AND cu.any_academic = ?
             AND c.data_canvi BETWEEN ? AND ?
@@ -84,7 +84,7 @@ class Canvi {
     public function create($data) {
         try {
             // Obtener el id_curs del horario seleccionado
-            $stmt = $this->pdo->prepare("SELECT id_curs FROM Horari WHERE id_horari = ?");
+            $stmt = $this->pdo->prepare("SELECT id_curs FROM horari WHERE id_horari = ?");
             $stmt->execute([$data['id_horari']]);
             $horari = $stmt->fetch(PDO::FETCH_ASSOC);
             
@@ -92,7 +92,7 @@ class Canvi {
                 throw new Exception("Horario no encontrado");
             }
 
-            $sql = "INSERT INTO Canvis (id_horari, id_curs, tipus_canvi, data_canvi, 
+            $sql = "INSERT INTO canvis (id_horari, id_curs, tipus_canvi, data_canvi, 
                     data_fi, id_professor_substitut, id_aula_substituta, descripcio_canvi, estat) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'actiu')";
             
@@ -116,7 +116,7 @@ class Canvi {
 
     public function update($id, $data) {
         try {
-            $sql = "UPDATE Canvis 
+            $sql = "UPDATE canvis 
                     SET tipus_canvi = ?,
                         data_canvi = ?,
                         data_fi = ?,
@@ -143,7 +143,7 @@ class Canvi {
     public function delete($id) {
         try {
             // Utilizamos borrado lógico cambiando el estado a 'inactiu'
-            $sql = "UPDATE Canvis SET estat = 'inactiu' WHERE id_canvi = ?";
+            $sql = "UPDATE canvis SET estat = 'inactiu' WHERE id_canvi = ?";
             $stmt = $this->pdo->prepare($sql);
             return $stmt->execute([$id]);
         } catch (PDOException $e) {

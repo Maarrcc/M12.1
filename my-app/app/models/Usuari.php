@@ -51,8 +51,8 @@ class Usuari
 
     public function getUsuarisNoAlumnes()
     {
-        $sql = "SELECT u.* FROM Usuaris u 
-                LEFT JOIN Alumnes a ON u.id_usuari = a.id_usuari 
+        $sql = "SELECT u.* FROM usuaris u 
+                LEFT JOIN alumnes a ON u.id_usuari = a.id_usuari 
                 WHERE a.id_alumne IS NULL AND u.rol = 'alumne'";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -60,8 +60,8 @@ class Usuari
 
     public function getUsuarisNoProfessors()
     {
-        $sql = "SELECT u.* FROM Usuaris u 
-                LEFT JOIN Professors p ON u.id_usuari = p.id_usuari 
+        $sql = "SELECT u.* FROM usuaris u 
+                LEFT JOIN professors p ON u.id_usuari = p.id_usuari 
                 WHERE p.id_professor IS NULL AND u.rol = 'professor'";
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

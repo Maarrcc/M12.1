@@ -22,7 +22,7 @@
             </p>
         </div>
 
-        <h2 class="text-2xl font-bold mt-10 mb-4">Punts Finals Disponibles</h2>
+        <h2 class="text-2xl font-bold mt-10 mb-4">EndPoints Disponibles</h2>
 
         <!-- GET /horari -->
         <div class="mb-8">

@@ -275,7 +275,7 @@ async function carregarDades(start, end, cursComplet) {
         const url = `${API_CONFIG.BASE_URL}?curs=${cursComplet}`;
         const urlCanvis = `${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`;
 
-        console.log('Fetching data from:', { url, urlCanvis });
+        console.log('Recuperant dades de:', { url, urlCanvis });
         
         const [horariResponse, canvisResponse] = await Promise.all([
             fetch(url, {
@@ -290,13 +290,13 @@ async function carregarDades(start, end, cursComplet) {
             })
         ]);
 
-        console.log('Response status:', { 
+        console.log('Estat de la resposta:', { 
             horari: horariResponse.status, 
             canvis: canvisResponse.status 
         });
 
         if (!horariResponse.ok || !canvisResponse.ok) {
-            throw new Error(`HTTP error! status: ${horariResponse.status} ${canvisResponse.status}`);
+            throw new Error(`Error HTTP! estat: ${horariResponse.status} ${canvisResponse.status}`);
         }
 
         const [horariData, canvisData] = await Promise.all([
@@ -304,7 +304,7 @@ async function carregarDades(start, end, cursComplet) {
             canvisResponse.json()
         ]);
 
-        console.log('Response data:', { horariData, canvisData });
+        console.log('Dades de la resposta:', { horariData, canvisData });
 
         if (!horariData.success || !canvisData.success) {
             throw new Error(horariData.message || canvisData.message || 'Error desconocido');
