@@ -11,7 +11,6 @@ class AuthController
 
     public function login()
     {
-        session_start();
         require_once '../app/views/auth/login.php';
     }
 

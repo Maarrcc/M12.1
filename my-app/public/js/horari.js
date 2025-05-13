@@ -22,10 +22,10 @@ const changeIcons = {
     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
   </svg>`,
   Altres: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#9c27b0">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-10-10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
   </svg>`,
   default: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#9c27b0">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-10-10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
   </svg>`,
 };
 
@@ -97,29 +97,43 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Configuración inicial
     const selectorCicle = document.getElementById('selector-cicle');
     const selectorAny = document.getElementById('selector-any');
     
-    // Obtener fecha actual
     const today = new Date();
     const dates = obtenirDatesSetmana(today);
     
-    // Cargar horario inicial
-    const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
-    actualitzaHorari(dates, cursComplet);
-
-    // Event listeners para cambios
+    // Event listeners para cambios de curso
     selectorCicle.addEventListener('change', function() {
+        netejarCache(true); // Limpieza completa al cambiar de ciclo
         const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
         actualitzaHorari(dates, cursComplet);
     });
 
     selectorAny.addEventListener('change', function() {
+        netejarCache(true); // Limpieza completa al cambiar de año
         const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
         actualitzaHorari(dates, cursComplet);
     });
+
+    // Event listeners para cambios de semana
+    document.getElementById('setmanaAnterior')?.addEventListener('click', () => {
+        netejarCache(false); // Solo limpiar cambios
+        actualitzaHorari(dates, cache.cursActual);
+    });
+    
+    document.getElementById('setmanaSeguent')?.addEventListener('click', () => {
+        netejarCache(false); // Solo limpiar cambios
+        actualitzaHorari(dates, cache.cursActual);
+    });
 });
+
+// Cache para almacenar temporalmente las respuestas
+const cache = {
+    horari: {},
+    canvis: {},
+    cursActual: null // Añadimos un tracking del curso actual
+};
 
 /**
  * Actualiza la taula d'horaris con las datos del horario base y
@@ -138,6 +152,15 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         const any = document.getElementById("selector-any")?.value || "Primer";
         cursComplet = `${cicle}-${any}`;
     }
+
+    // Si es el mismo curso que ya estamos mostrando, no hacemos nada
+    if (cache.cursActual === cursComplet && Object.keys(cache.horari).length > 0) {
+        console.log('Usando datos en caché para:', cursComplet);
+        return;
+    }
+
+    // Actualizamos el curso actual
+    cache.cursActual = cursComplet;
 
     if (grid) grid.style.opacity = "0.5";
 
@@ -252,6 +275,19 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         });
 }
 
+// Modificar la función para limpiar el caché
+function netejarCache(completo = false) {
+    if (completo) {
+        // Limpieza completa del caché
+        cache.horari = {};
+        cache.canvis = {};
+        cache.cursActual = null;
+    } else {
+        // Solo limpiar los cambios, manteniendo el horario base
+        cache.canvis = {};
+    }
+}
+
 // Asegurar que la función se llama cuando se carga la página
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date();
@@ -272,44 +308,51 @@ window.actualitzaHorari = actualitzaHorari;
  */
 async function carregarDades(start, end, cursComplet) {
     try {
-        const url = `${API_CONFIG.BASE_URL}?curs=${cursComplet}`;
-        const urlCanvis = `${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`;
+        // Generar claves únicas para el caché
+        const horariKey = `${cursComplet}`;
+        const canvisKey = `${cursComplet}_${start}_${end}`;
 
-        console.log('Recuperant dades de:', { url, urlCanvis });
-        
-        const [horariResponse, canvisResponse] = await Promise.all([
-            fetch(url, {
+        // Intentar obtener datos del caché
+        let horariData = cache.horari[horariKey];
+        let canvisData = cache.canvis[canvisKey];
+
+        // Si no están en caché, hacer las peticiones
+        if (!horariData) {
+            const horariResponse = await fetch(`${API_CONFIG.BASE_URL}?curs=${cursComplet}`, {
                 headers: {
                     'X-API-Key': API_CONFIG.API_KEY
                 }
-            }),
-            fetch(urlCanvis, {
-                headers: {
-                    'X-API-Key': API_CONFIG.API_KEY
-                }
-            })
-        ]);
+            });
 
-        console.log('Estat de la resposta:', { 
-            horari: horariResponse.status, 
-            canvis: canvisResponse.status 
-        });
+            if (!horariResponse.ok) {
+                throw new Error(`Error HTTP! estat: ${horariResponse.status}`);
+            }
 
-        if (!horariResponse.ok || !canvisResponse.ok) {
-            throw new Error(`Error HTTP! estat: ${horariResponse.status} ${canvisResponse.status}`);
+            horariData = await horariResponse.json();
+            // Guardar en caché
+            cache.horari[horariKey] = horariData;
         }
 
-        const [horariData, canvisData] = await Promise.all([
-            horariResponse.json(),
-            canvisResponse.json()
-        ]);
+        if (!canvisData) {
+            const canvisResponse = await fetch(`${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`, {
+                headers: {
+                    'X-API-Key': API_CONFIG.API_KEY
+                }
+            });
 
-        console.log('Dades de la resposta:', { horariData, canvisData });
+            if (!canvisResponse.ok) {
+                throw new Error(`Error HTTP! estat: ${canvisResponse.status}`);
+            }
+
+            canvisData = await canvisResponse.json();
+            // Guardar en caché
+            cache.canvis[canvisKey] = canvisData;
+        }
 
         if (!horariData.success || !canvisData.success) {
             throw new Error(horariData.message || canvisData.message || 'Error desconocido');
         }
-        
+
         return {
             horari: horariData.data,
             canvis: canvisData.data
@@ -321,7 +364,6 @@ async function carregarDades(start, end, cursComplet) {
 }
 
 function actualizarHorario() {
-    const horariGrid = document.getElementById('horari');
     const horariContainer = document.querySelector('.horari-container');
     const diaSeleccionado = document.getElementById('selector-dia').value.toLowerCase();
     const esMobile = window.innerWidth <= 768;
