@@ -14,7 +14,6 @@ class AlumnesController {
     }
 
     public function assign() {
-        session_start();
         if (!isset($_SESSION['user'])) {
             header('Location: /M12.1/my-app/public/index.php?controller=auth&action=login');
             exit;

@@ -66,4 +66,49 @@ class Usuari
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getAllUsuaris() {
+        $sql = "SELECT * FROM usuaris ORDER BY nom";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function delete($id) {
+        try {
+            // Primero verificar si el usuario existe
+            $stmt = $this->pdo->prepare("SELECT rol FROM usuaris WHERE id_usuari = ?");
+            $stmt->execute([$id]);
+            $usuari = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$usuari) {
+                throw new Exception("Usuari no trobat");
+            }
+
+            // Iniciar transacción
+            $this->pdo->beginTransaction();
+
+            // Eliminar registros relacionados según el rol
+            if ($usuari['rol'] === 'alumne') {
+                $stmt = $this->pdo->prepare("DELETE FROM assignatures_alumnes WHERE id_alumne IN (SELECT id_alumne FROM alumnes WHERE id_usuari = ?)");
+                $stmt->execute([$id]);
+                
+                $stmt = $this->pdo->prepare("DELETE FROM alumnes WHERE id_usuari = ?");
+                $stmt->execute([$id]);
+            } elseif ($usuari['rol'] === 'professor') {
+                $stmt = $this->pdo->prepare("DELETE FROM professors WHERE id_usuari = ?");
+                $stmt->execute([$id]);
+            }
+
+            // Finalmente eliminar el usuario
+            $stmt = $this->pdo->prepare("DELETE FROM usuaris WHERE id_usuari = ?");
+            $stmt->execute([$id]);
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            throw new Exception("Error al eliminar l'usuari: " . $e->getMessage());
+        }
+    }
 }

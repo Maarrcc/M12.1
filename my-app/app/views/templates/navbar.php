@@ -38,9 +38,10 @@
                     <ul class="dropdown-menu">
                         <li><a href="/M12.1/my-app/public/index.php?controller=curs">Gestió Cursos</a></li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=horari&action=manage">Gestió Horaris</a></li>
-                        <li><a href="/M12.1/my-app/public/index.php?controller=import&action=index">Importar Usuaris</a>
-                        </li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=canvis&action=index">Gestió Canvis</a>
+                        </li>
+                        <li><a href="/M12.1/my-app/public/index.php?controller=usuaris">Gestió Usuaris</a></li>
+                        <li><a href="/M12.1/my-app/public/index.php?controller=import&action=index">Importar Usuaris</a>
                         </li>
                         <li><a href="/M12.1/my-app/public/index.php?controller=canvis&action=create">Registrar Canvi</a>
                         </li>

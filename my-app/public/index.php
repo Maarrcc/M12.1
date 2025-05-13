@@ -49,6 +49,7 @@ require_once '../app/controllers/ImportController.php';
 require_once '../app/controllers/AssignaturesAlumnesController.php';
 require_once '../app/controllers/CursController.php';
 require_once '../app/controllers/HomeController.php';
+require_once '../app/controllers/UsuarisController.php';
 
 // Obtener el controlador y la acción de la URL
 $controller = isset($_GET['controller']) ? $_GET['controller'] : 'home';
