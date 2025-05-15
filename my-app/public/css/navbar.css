@@ -150,6 +150,7 @@
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .nav-button:hover {
@@ -214,21 +215,27 @@
     position: relative;
   }
 
+  /* En móviles el menú se oculta inicialmente y se muestra con transición */
   .nav-links {
-    display: none;
     flex-direction: column;
     position: absolute;
     top: 60px;
     left: 0;
-    width: 40%;
+    width: 100%;
     background-color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     padding: var(--spacing-md);
     gap: var(--spacing-sm);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
   }
 
+  /* Al activar la clase .active, el menú se expande */
   .nav-links.active {
-    display: flex;
+    max-height: 500px; /* Valor suficientemente alto para mostrar todos los elementos */
+    opacity: 1;
   }
 
   .nav-links li {
@@ -246,6 +253,7 @@
     padding: var(--spacing-sm);
   }
 
+  /* Para el desplegable, se desactiva el hover y se controla con clase */
   .dropdown-menu {
     position: static;
     width: 100%;
@@ -255,14 +263,14 @@
   }
 
   .dropdown:hover .dropdown-menu {
-    display: none; /* Desactiva hover en móvil */
+    display: none;
   }
 
   .dropdown.active .dropdown-menu {
-    display: block; /* Activa con clase en lugar de hover */
+    display: block;
   }
 
-  /* Animación hamburguesa */
+  /* Animación para el botón hamburger */
   .nav-toggle.active .hamburger {
     background: transparent;
   }
