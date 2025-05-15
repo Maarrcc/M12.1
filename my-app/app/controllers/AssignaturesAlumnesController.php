@@ -22,9 +22,9 @@ class AssignaturesAlumnesController {
 
             $isAdmin = $_SESSION['user']['rol'] === 'admin';
             $currentUserId = $_SESSION['user']['id_usuari'];
-            
-            // Si es alumno, obtener primero su ID de alumno
+
             if ($_SESSION['user']['rol'] === 'alumne') {
+                // Obtener el id_alumne a partir del id_usuari
                 $alumneId = $this->model->getAlumneIdByUserId($currentUserId);
                 if (!$alumneId) {
                     $_SESSION['error'] = 'No s\'ha trobat el teu registre d\'alumne';
@@ -33,17 +33,17 @@ class AssignaturesAlumnesController {
                 }
                 $matricules = $this->model->getMatriculesAlumne($alumneId);
                 $assignatures = $this->model->getAssignaturesDisponibles($alumneId);
-                // Añadir el ID del alumno a las variables
                 $currentAlumneId = $alumneId;
             } else {
-                // Si es admin, obtener todas las matrículas
+                // Si es admin, mostrar todas las matrículas
                 $matricules = $this->model->getAllMatricules();
                 $assignatures = $this->model->getAllAssignatures();
+                $currentAlumneId = null;
             }
-            
+
             $alumnes = $isAdmin ? $this->model->getAllAlumnes() : [];
-            $curs = true; // Para que se muestre el formulario de gestión
-            
+            $curs = true; // Para mostrar el formulario
+
             require_once '../app/views/matricules/assign.php';
         } catch (Exception $e) {
             $_SESSION['error'] = 'Error: ' . $e->getMessage();

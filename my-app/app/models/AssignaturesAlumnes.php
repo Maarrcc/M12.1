@@ -120,12 +120,11 @@ class AssignaturesAlumnes {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getAlumneIdByUserId($userId) {
-        $sql = "SELECT id_alumne FROM Alumnes WHERE id_usuari = ?";
+    public function getAlumneIdByUserId($idUsuari) {
+        $sql = "SELECT id_alumne FROM alumnes WHERE id_usuari = ?";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$userId]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $result ? $result['id_alumne'] : null;
+        $stmt->execute([$idUsuari]);
+        return $stmt->fetchColumn();
     }
 
     public function getMatriculesAlumne($idAlumne) {
