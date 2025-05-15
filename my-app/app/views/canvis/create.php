@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Registrar Canvi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/M12.1/my-app/public/css/formularioGigante.css">
     <link rel="stylesheet" type="text/css" href="/M12.1/my-app/public/css/navbar.css" />
 </head>

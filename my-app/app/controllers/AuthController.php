@@ -45,7 +45,6 @@ class AuthController
     
     public function register()
     {
-        session_start();
         require_once '../app/views/auth/sign-in.php';
     }
 

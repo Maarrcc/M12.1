@@ -2,6 +2,7 @@
 
 <div class="container mt-4">
     <h2>Crear Nou Horari</h2>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="/M12.1/my-app/public/css/navbar.css">
     <link rel="stylesheet" href="/M12.1/my-app/public/css/horariForm.css">
 

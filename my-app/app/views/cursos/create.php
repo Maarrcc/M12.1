@@ -1,5 +1,6 @@
 <?php include_once '../app/views/templates/navbar.php'; ?>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <div class="container mt-4">
     <h2>Crear Nuevo Curso</h2>
     <form action="/M12.1/my-app/public/index.php?controller=curs&action=store" method="POST">

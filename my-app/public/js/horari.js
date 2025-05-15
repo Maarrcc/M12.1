@@ -32,6 +32,9 @@ const changeIcons = {
 const selectorDia = document.getElementById('selector-dia');
 let diaSeleccionado = 'Dilluns';
 
+// Añadir al inicio del archivo, junto con las otras variables globales
+let currentController = null;
+
 // Añadir event listener para el selector de día
 selectorDia.addEventListener('change', function(e) {
     diaSeleccionado = e.target.value;
@@ -105,27 +108,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listeners para cambios de curso
     selectorCicle.addEventListener('change', function() {
-        netejarCache(true); // Limpieza completa al cambiar de ciclo
         const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
         actualitzaHorari(dates, cursComplet);
     });
 
     selectorAny.addEventListener('change', function() {
-        netejarCache(true); // Limpieza completa al cambiar de año
         const cursComplet = `${selectorCicle.value}-${selectorAny.value}`;
         actualitzaHorari(dates, cursComplet);
     });
 
-    // Event listeners para cambios de semana
-    document.getElementById('setmanaAnterior')?.addEventListener('click', () => {
-        netejarCache(false); // Solo limpiar cambios
-        actualitzaHorari(dates, cache.cursActual);
-    });
-    
-    document.getElementById('setmanaSeguent')?.addEventListener('click', () => {
-        netejarCache(false); // Solo limpiar cambios
-        actualitzaHorari(dates, cache.cursActual);
-    });
+    // Cargar solo el curso inicial
+    const cursInicial = `${selectorCicle.value}-${selectorAny.value}`;
+    actualitzaHorari(dates, cursInicial);
 });
 
 // Cache para almacenar temporalmente las respuestas
@@ -153,10 +147,21 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         cursComplet = `${cicle}-${any}`;
     }
 
-    // Si es el mismo curso que ya estamos mostrando, no hacemos nada
+    // Cancelar petición anterior si existe
+    if (currentController) {
+        currentController.abort();
+    }
+
+    // Si es el mismo curso que ya estamos mostrando y tenemos datos en caché, usarlos
     if (cache.cursActual === cursComplet && Object.keys(cache.horari).length > 0) {
         console.log('Usando datos en caché para:', cursComplet);
+        renderizarHorario(cache.horari[cursComplet].data, cache.canvis[`${cursComplet}_${datesSetmana.dilluns.toISOString().split("T")[0]}_${datesSetmana.divendres.toISOString().split("T")[0]}`]?.data);
         return;
+    }
+
+    // Limpiar caché de otros cursos
+    if (cache.cursActual !== cursComplet) {
+        netejarCache(true);
     }
 
     // Actualizamos el curso actual
@@ -164,118 +169,129 @@ function actualitzaHorari(datesSetmana, cursComplet) {
 
     if (grid) grid.style.opacity = "0.5";
 
+    // Crear nuevo controlador para esta petición
+    currentController = new AbortController();
+
+    // Guardar la promesa de la petición actual
     carregarDades(
         datesSetmana.dilluns.toISOString().split("T")[0],
         datesSetmana.divendres.toISOString().split("T")[0],
-        cursComplet
+        cursComplet,
+        currentController.signal
     )
-        .then((data) => {
-            if (!data || !data.horari || !Array.isArray(data.horari)) {
-                throw new Error("Formato de datos inválido");
-            }
-
-            // Limpiar cuadrícula
-            document.querySelectorAll(".dia-cell").forEach((cell) => {
-                cell.className = "dia-cell celda-vacia";
-                cell.innerHTML = "";
-                cell.removeAttribute("data-cambio");
-            });
-
-            // Procesar horario base
-            data.horari.forEach((item) => {
-                if (!item || !item.hora_inici || !item.dia) {
-                    console.warn('Datos de horario incompletos:', item);
-                    return;
-                }
-
-                const hora = item.hora_inici.slice(0, 5);
-                const dia = item.dia.toLowerCase();
-                const cell = document.querySelector(
-                    `.dia-cell[data-dia='${dia}'][data-hora='${hora}']`
-                );
-
-                if (cell) {
-                    cell.classList.remove("celda-vacia");
-                    cell.setAttribute("data-horari", item.id_horari);
-                    const modulo = item.assignatura.match(/M\d+/)?.[0] || "default";
-                    cell.classList.add(assignaturesClasses[modulo] || "modulo-default");
-
-                    cell.innerHTML = `
-                        <div class="classe-info">
-                            <div class="classe-info-basic">
-                                <div class="assignatura">${item.assignatura}</div>
-                                <div class="professor">${item.professor}</div>
-                                <div class="aula">Aula: ${item.aula}</div>
-                            </div>
-                        </div>`;
-                }
-            });
-
-            // Procesar cambios
-            if (data.canvis && Array.isArray(data.canvis)) {
-                data.canvis.forEach((canvi) => {
-                    if (!canvi || !canvi.id_horari || !canvi.tipus_canvi) {
-                        console.warn('Datos de cambio incompletos:', canvi);
-                        return;
-                    }
-
-                    const cell = document.querySelector(
-                        `.dia-cell[data-horari='${canvi.id_horari}']`
-                    );
-
-                    if (cell) {
-                        cell.classList.add("cambio-horario");
-                        cell.setAttribute("data-cambio", canvi.tipus_canvi);
-
-                        const tipoCambio = canvi.tipus_canvi.toLowerCase().replace(" ", "-");
-                        const canviInfo = document.createElement("div");
-                        canviInfo.className = `cambio-info cambio-${tipoCambio}`;
-
-                        let descripcionCambio = '';
-                        switch (canvi.tipus_canvi) {
-                            case 'Absència professor':
-                                descripcionCambio = `Professor absent`;
-                                break;
-                            case 'Canvi aula':
-                                descripcionCambio = canvi.aula_substituta ? 
-                                    `Canvi d'aula: ${canvi.aula_original} → ${canvi.aula_substituta}` :
-                                    `Canvi d'aula`;
-                                break;
-                            case 'Canvi professor':
-                                descripcionCambio = canvi.professor_substitut ?
-                                    `Canvi de professor: ${canvi.professor_original} → ${canvi.professor_substitut}` :
-                                    `Canvi de professor`;
-                                break;
-                            case 'Classe cancelada':
-                                descripcionCambio = 'Classe cancel·lada';
-                                break;
-                            default:
-                                descripcionCambio = canvi.descripcio_canvi || 'Altres canvis';
-                        }
-
-                        canviInfo.innerHTML = `
-                            <span class="cambio-icon">${changeIcons[canvi.tipus_canvi] || changeIcons["default"]}</span>
-                            <span class="cambio-text">${descripcionCambio}</span>
-                        `;
-
-                        cell.appendChild(canviInfo);
-                    }
-                });
-            }
-
+    .then((data) => {
+        if (data) { // Verificar que data existe
+            renderizarHorario(data.horari, data.canvis);
             grid.style.opacity = "1";
-        })
-        .catch((error) => {
+        }
+    })
+    .catch((error) => {
+        // Solo mostrar errores que no sean de cancelación
+        if (error.name !== 'AbortError') {
             console.error("Error:", error);
             grid.style.opacity = "1";
             const errorDiv = document.createElement("div");
             errorDiv.id = "error-message";
             errorDiv.textContent = "Error al cargar el horario";
             document.querySelector(".horari-container").prepend(errorDiv);
-        });
+        }
+    });
 }
 
-// Modificar la función para limpiar el caché
+// Separar la lógica de renderizado
+function renderizarHorario(horariData, canvisData) {
+    const grid = document.querySelector("#horari");
+
+    // Limpiar cuadrícula
+    document.querySelectorAll(".dia-cell").forEach((cell) => {
+        cell.className = "dia-cell celda-vacia";
+        cell.innerHTML = "";
+        cell.removeAttribute("data-cambio");
+    });
+
+    // Procesar horario base
+    horariData.forEach((item) => {
+        if (!item || !item.hora_inici || !item.dia) {
+            console.warn('Datos de horario incompletos:', item);
+            return;
+        }
+
+        const hora = item.hora_inici.slice(0, 5);
+        const dia = item.dia.toLowerCase();
+        const cell = document.querySelector(
+            `.dia-cell[data-dia='${dia}'][data-hora='${hora}']`
+        );
+
+        if (cell) {
+            cell.classList.remove("celda-vacia");
+            cell.setAttribute("data-horari", item.id_horari);
+            const modulo = item.assignatura.match(/M\d+/)?.[0] || "default";
+            cell.classList.add(assignaturesClasses[modulo] || "modulo-default");
+
+            cell.innerHTML = `
+                <div class="classe-info">
+                    <div class="classe-info-basic">
+                        <div class="assignatura">${item.assignatura}</div>
+                        <div class="professor">${item.professor}</div>
+                        <div class="aula">Aula: ${item.aula}</div>
+                    </div>
+                </div>`;
+        }
+    });
+
+    // Procesar cambios
+    if (canvisData && Array.isArray(canvisData)) {
+        canvisData.forEach((canvi) => {
+            if (!canvi || !canvi.id_horari || !canvi.tipus_canvi) {
+                console.warn('Datos de cambio incompletos:', canvi);
+                return;
+            }
+
+            const cell = document.querySelector(
+                `.dia-cell[data-horari='${canvi.id_horari}']`
+            );
+
+            if (cell) {
+                cell.classList.add("cambio-horario");
+                cell.setAttribute("data-cambio", canvi.tipus_canvi);
+
+                const tipoCambio = canvi.tipus_canvi.toLowerCase().replace(" ", "-");
+                const canviInfo = document.createElement("div");
+                canviInfo.className = `cambio-info cambio-${tipoCambio}`;
+
+                let descripcionCambio = '';
+                switch (canvi.tipus_canvi) {
+                    case 'Absència professor':
+                        descripcionCambio = `Professor absent`;
+                        break;
+                    case 'Canvi aula':
+                        descripcionCambio = canvi.aula_substituta ? 
+                            `Canvi d'aula: ${canvi.aula_original} → ${canvi.aula_substituta}` :
+                            `Canvi d'aula`;
+                        break;
+                    case 'Canvi professor':
+                        descripcionCambio = canvi.professor_substitut ?
+                            `Canvi de professor: ${canvi.professor_original} → ${canvi.professor_substitut}` :
+                            `Canvi de professor`;
+                        break;
+                    case 'Classe cancelada':
+                        descripcionCambio = 'Classe cancel·lada';
+                        break;
+                    default:
+                        descripcionCambio = canvi.descripcio_canvi || 'Altres canvis';
+                }
+
+                canviInfo.innerHTML = `
+                    <span class="cambio-icon">${changeIcons[canvi.tipus_canvi] || changeIcons["default"]}</span>
+                    <span class="cambio-text">${descripcionCambio}</span>
+                `;
+
+                cell.appendChild(canviInfo);
+            }
+        });
+    }
+}
+
 function netejarCache(completo = false) {
     if (completo) {
         // Limpieza completa del caché
@@ -299,29 +315,36 @@ document.addEventListener("DOMContentLoaded", () => {
 window.actualitzaHorari = actualitzaHorari;
 
 /**
+ * Espera un tiempo determinado
+ * @param {number} ms Milisegundos a esperar
+ * @returns {Promise} Promise que se resuelve después del tiempo especificado
+ */
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+/**
  * Carrega les dades del horari des de l'API PHP.
  * @param {string} start Data d'inici del període.
  * @param {string} end Data de fi del període.
  * @param {string} cursComplet Nom del curs amb format "DAW-Primer".
+ * @param {AbortSignal} signal Señal para cancelar la petición.
  * @return {Promise<Object>} Dades del horari.
  * @throws {Error} Si hi ha algun error en la càrrega.
  */
-async function carregarDades(start, end, cursComplet) {
+async function carregarDades(start, end, cursComplet, signal) {
     try {
-        // Generar claves únicas para el caché
         const horariKey = `${cursComplet}`;
         const canvisKey = `${cursComplet}_${start}_${end}`;
 
-        // Intentar obtener datos del caché
         let horariData = cache.horari[horariKey];
         let canvisData = cache.canvis[canvisKey];
 
-        // Si no están en caché, hacer las peticiones
+        // Realizar las peticiones de forma secuencial
         if (!horariData) {
             const horariResponse = await fetch(`${API_CONFIG.BASE_URL}?curs=${cursComplet}`, {
                 headers: {
                     'X-API-Key': API_CONFIG.API_KEY
-                }
+                },
+                signal // Añadir la señal para poder cancelar
             });
 
             if (!horariResponse.ok) {
@@ -329,15 +352,17 @@ async function carregarDades(start, end, cursComplet) {
             }
 
             horariData = await horariResponse.json();
-            // Guardar en caché
             cache.horari[horariKey] = horariData;
+
+            await delay(1000);
         }
 
         if (!canvisData) {
             const canvisResponse = await fetch(`${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`, {
                 headers: {
                     'X-API-Key': API_CONFIG.API_KEY
-                }
+                },
+                signal // Añadir la señal para poder cancelar
             });
 
             if (!canvisResponse.ok) {
@@ -345,7 +370,6 @@ async function carregarDades(start, end, cursComplet) {
             }
 
             canvisData = await canvisResponse.json();
-            // Guardar en caché
             cache.canvis[canvisKey] = canvisData;
         }
 
@@ -358,6 +382,11 @@ async function carregarDades(start, end, cursComplet) {
             canvis: canvisData.data
         };
     } catch (error) {
+        // Ignorar errores de cancelación
+        if (error.name === 'AbortError') {
+            console.log('Petición cancelada');
+            return;
+        }
         console.error("Error en carregarDades:", error);
         throw error;
     }
