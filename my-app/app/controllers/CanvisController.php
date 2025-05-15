@@ -106,7 +106,6 @@ class CanvisController
     private function enviarNotificacionCambio($data)
     {
         require_once '../vendor/autoload.php';
-
         $mail = new PHPMailer(true);
 
         try {
@@ -114,7 +113,7 @@ class CanvisController
             $mail->Host = 'smtp.dondominio.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'info@racogamer.cat';
-            $mail->Password = 'MarcAlvero25-'; // NOTA: Usar variable de entorno a ser posible
+            $mail->Password = 'MarcAlvero25-';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
@@ -125,7 +124,15 @@ class CanvisController
             );
 
             $mail->setFrom('info@racogamer.cat', 'Sistema de Horarios');
-            $mail->addAddress('marcalvero@insestatut.cat');
+            
+            // Añadir destinatarios solo si tienen notificaciones activadas
+            if (!empty($detallesCambio['alumnes_emails'])) {
+                $emails = explode(',', $detallesCambio['alumnes_emails']);
+                foreach ($emails as $email) {
+                    $mail->addBCC(trim($email)); // Usar BCC para ocultar los destinatarios entre sí
+                }
+            }
+            
 
             $mail->isHTML(true);
             $mail->Subject = 'Nou canvi en l\'horari - ' . $data['tipus_canvi'];
@@ -183,6 +190,7 @@ class CanvisController
             return false;
         }
     }
+
     public function getHorarisByDia()
     {
         if (!isset($_SESSION['user']) || $_SESSION['user']['rol'] !== 'admin') {

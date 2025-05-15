@@ -123,27 +123,32 @@ class Canvi {
     }
 
     public function obtenerDetallesCambio($idHorari, $idAulaSubstituta = null, $idProfessorSubstitut = null) {
-        $sql = "SELECT 
-            h.id_horari,
-            CONCAT(c.nom_cicle, ' ', c.any_academic) as curs,
+        $sql = "SELECT h.*, 
             a.nom as assignatura,
-            u.nom as professor,
+            up.nom as professor,
+            ups.nom as professor_substitut,
             au.nom_aula as aula_original,
-            (SELECT nom_aula FROM aulas WHERE id_aula = ?) as aula_substituta,
-            (SELECT u2.nom 
-             FROM professors p2 
-             JOIN usuaris u2 ON p2.id_usuari = u2.id_usuari 
-             WHERE p2.id_professor = ?) as professor_substitut
+            aus.nom_aula as aula_substituta,
+            CONCAT(c.nom_cicle, ' ', c.any_academic) as curs,
+            GROUP_CONCAT(DISTINCT ua.email) as alumnes_emails
             FROM horari h
-            JOIN cursos c ON h.id_curs = c.id_curs
             JOIN assignatures a ON h.id_assignatura = a.id_assignatura
             JOIN professors p ON h.id_professor = p.id_professor
-            JOIN usuaris u ON p.id_usuari = u.id_usuari
+            JOIN usuaris up ON p.id_usuari = up.id_usuari
+            LEFT JOIN professors ps ON ps.id_professor = ?
+            LEFT JOIN usuaris ups ON ps.id_usuari = ups.id_usuari
             JOIN aulas au ON h.id_aula = au.id_aula
-            WHERE h.id_horari = ?";
+            LEFT JOIN aulas aus ON aus.id_aula = ?
+            JOIN cursos c ON h.id_curs = c.id_curs
+            LEFT JOIN assignatures_alumnes aa ON a.id_assignatura = aa.id_assignatura 
+                AND aa.rebre_notificacions = 1
+            LEFT JOIN alumnes al ON aa.id_alumne = al.id_alumne
+            LEFT JOIN usuaris ua ON al.id_usuari = ua.id_usuari
+            WHERE h.id_horari = ?
+            GROUP BY h.id_horari";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$idAulaSubstituta, $idProfessorSubstitut, $idHorari]);
+        $stmt->execute([$idProfessorSubstitut, $idAulaSubstituta, $idHorari]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
