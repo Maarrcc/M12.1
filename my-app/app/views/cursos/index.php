@@ -13,6 +13,12 @@
         </div>
     <?php endif; ?>
 
+    <div class="actions-container">
+        <a href="/M12.1/my-app/public/index.php?controller=curs&action=create" class="btn-add">
+            <i class="fas fa-plus"></i> Crear Curs
+        </a>
+    </div>
+
     <div class="table-container">
         <table class="table">
             <thead>

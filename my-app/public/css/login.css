@@ -125,6 +125,33 @@ textarea {
   min-height: 100px;
 }
 
+.password-feedback {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.password-requirements {
+    color: #dc3545;
+}
+
+.password-valid {
+    color: #28a745;
+}
+
+.form-text {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.form-text ul {
+    margin-top: 0.5rem;
+    padding-left: 1.25rem;
+}
+
+.form-text li {
+    margin-bottom: 0.25rem;
+}
+
 /* Responsive design para el navbar y formularios */
 
 /* Ajustes para pantallas medianas */

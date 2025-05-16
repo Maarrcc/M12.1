@@ -38,7 +38,7 @@ let currentController = null;
 // Añadir event listener para el selector de día
 selectorDia.addEventListener('change', function(e) {
     diaSeleccionado = e.target.value;
-    actualizarHorario(); // Función que deberás modificar para mostrar solo el día seleccionado
+    actualizarHorario(); 
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -122,20 +122,13 @@ document.addEventListener('DOMContentLoaded', function() {
     actualitzaHorari(dates, cursInicial);
 });
 
-// Cache para almacenar temporalmente las respuestas
-const cache = {
-    horari: {},
-    canvis: {},
-    cursActual: null // Añadimos un tracking del curso actual
-};
-
 /**
- * Actualiza la taula d'horaris con las datos del horario base y
- * los cambios correspondientes a una semana y un curso.
+ * Actualiza la taula d'horaris amb les dades del horari base i
+ * els canvis corresponents a una setmana i un curs.
  *
- * @param {Object} datesSetmana objeto con las fechas de inicio y fin
- *                              de la semana en formato ISO
- * @param {string} [cursComplet] Identificador de curso (formato:
+ * @param {Object} datesSetmana objecte amb les dates d'inici i fi
+ *                              de la setmana en format ISO
+ * @param {string} [cursComplet] Identificador de curs (format:
  *                              "DAW-Primer")
  */
 function actualitzaHorari(datesSetmana, cursComplet) {
@@ -152,27 +145,12 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         currentController.abort();
     }
 
-    // Si es el mismo curso que ya estamos mostrando y tenemos datos en caché, usarlos
-    if (cache.cursActual === cursComplet && Object.keys(cache.horari).length > 0) {
-        console.log('Usando datos en caché para:', cursComplet);
-        renderizarHorario(cache.horari[cursComplet].data, cache.canvis[`${cursComplet}_${datesSetmana.dilluns.toISOString().split("T")[0]}_${datesSetmana.divendres.toISOString().split("T")[0]}`]?.data);
-        return;
-    }
-
-    // Limpiar caché de otros cursos
-    if (cache.cursActual !== cursComplet) {
-        netejarCache(true);
-    }
-
-    // Actualizamos el curso actual
-    cache.cursActual = cursComplet;
-
     if (grid) grid.style.opacity = "0.5";
 
     // Crear nuevo controlador para esta petición
     currentController = new AbortController();
 
-    // Guardar la promesa de la petición actual
+    // Realizar la petición
     carregarDades(
         datesSetmana.dilluns.toISOString().split("T")[0],
         datesSetmana.divendres.toISOString().split("T")[0],
@@ -180,13 +158,12 @@ function actualitzaHorari(datesSetmana, cursComplet) {
         currentController.signal
     )
     .then((data) => {
-        if (data) { // Verificar que data existe
+        if (data) {
             renderizarHorario(data.horari, data.canvis);
             grid.style.opacity = "1";
         }
     })
     .catch((error) => {
-        // Solo mostrar errores que no sean de cancelación
         if (error.name !== 'AbortError') {
             console.error("Error:", error);
             grid.style.opacity = "1";
@@ -332,49 +309,34 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
  */
 async function carregarDades(start, end, cursComplet, signal) {
     try {
-        const horariKey = `${cursComplet}`;
-        const canvisKey = `${cursComplet}_${start}_${end}`;
+        const horariResponse = await fetch(`${API_CONFIG.BASE_URL}?curs=${cursComplet}`, {
+            headers: {
+                'X-API-Key': API_CONFIG.API_KEY
+            },
+            signal
+        });
 
-        let horariData = cache.horari[horariKey];
-        let canvisData = cache.canvis[canvisKey];
-
-        // Realizar las peticiones de forma secuencial
-        if (!horariData) {
-            const horariResponse = await fetch(`${API_CONFIG.BASE_URL}?curs=${cursComplet}`, {
-                headers: {
-                    'X-API-Key': API_CONFIG.API_KEY
-                },
-                signal // Añadir la señal para poder cancelar
-            });
-
-            if (!horariResponse.ok) {
-                throw new Error(`Error HTTP! estat: ${horariResponse.status}`);
-            }
-
-            horariData = await horariResponse.json();
-            cache.horari[horariKey] = horariData;
-
-            await delay(1000);
+        if (!horariResponse.ok) {
+            throw new Error(`Error HTTP! estat: ${horariResponse.status}`);
         }
 
-        if (!canvisData) {
-            const canvisResponse = await fetch(`${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`, {
-                headers: {
-                    'X-API-Key': API_CONFIG.API_KEY
-                },
-                signal // Añadir la señal para poder cancelar
-            });
+        const horariData = await horariResponse.json();
 
-            if (!canvisResponse.ok) {
-                throw new Error(`Error HTTP! estat: ${canvisResponse.status}`);
-            }
+        const canvisResponse = await fetch(`${API_CONFIG.BASE_URL}/canvis?curs=${cursComplet}&start=${start}&end=${end}`, {
+            headers: {
+                'X-API-Key': API_CONFIG.API_KEY
+            },
+            signal
+        });
 
-            canvisData = await canvisResponse.json();
-            cache.canvis[canvisKey] = canvisData;
+        if (!canvisResponse.ok) {
+            throw new Error(`Error HTTP! estat: ${canvisResponse.status}`);
         }
+
+        const canvisData = await canvisResponse.json();
 
         if (!horariData.success || !canvisData.success) {
-            throw new Error(horariData.message || canvisData.message || 'Error desconocido');
+            throw new Error(horariData.message || canvisData.message || 'Error desconegut');
         }
 
         return {

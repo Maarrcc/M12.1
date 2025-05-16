@@ -56,7 +56,32 @@ class AuthController
         $nom = $_POST['nom'] ?? '';
         $email = $_POST['email'] ?? '';
         $contrasenya = $_POST['contrasenya'] ?? '';
-        $rol = $_POST['rol'] ?? '';
+        
+        // Validación de la contraseña
+        $longitudMinima = 8;
+        $tieneMayuscula = preg_match('/[A-Z]/', $contrasenya);
+        $tieneMinuscula = preg_match('/[a-z]/', $contrasenya);
+        $tieneNumero = preg_match('/[0-9]/', $contrasenya);
+        $tieneEspecial = preg_match('/[^A-Za-z0-9]/', $contrasenya);
+
+        if (strlen($contrasenya) < $longitudMinima) {
+            $_SESSION['error'] = 'La contrasenya ha de tenir almenys 8 caràcters';
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=register');
+            exit;
+        }
+
+        if (!$tieneMayuscula || !$tieneMinuscula || !$tieneNumero || !$tieneEspecial) {
+            $_SESSION['error'] = 'La contrasenya ha de contenir almenys una majúscula, una minúscula, un número i un caràcter especial';
+            header('Location: /M12.1/my-app/public/index.php?controller=auth&action=register');
+            exit;
+        }
+
+        // Solo permitir elegir rol si es admin
+        if (isset($_SESSION['user']) && $_SESSION['user']['rol'] === 'admin') {
+            $rol = $_POST['rol'] ?? 'alumne';
+        } else {
+            $rol = 'alumne';
+        }
 
         // Validación básica
         if (empty($nom_usuari) || empty($nom) || empty($email) || empty($contrasenya) || empty($rol)) {

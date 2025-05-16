@@ -25,15 +25,20 @@
             <div class="form-group">
                 <label for="contrasenya">Contrasenya:</label>
                 <input type="password" id="contrasenya" name="contrasenya" required>
+                <div id="password-feedback" class="password-feedback"></div>
             </div>
-            <div class="form-group">
-                <label for="rol">Tipus d'usuari:</label>
-                <select id="rol" name="rol" required>
-                    <option value="alumne">Alumne</option>
-                    <option value="professor">Professor</option>
-                    <option value="admin">Administrador</option>
-                </select>
-            </div>
+            <?php if (isset($_SESSION['user']) && $_SESSION['user']['rol'] === 'admin'): ?>
+                <div class="form-group">
+                    <label for="rol">Tipus d'usuari:</label>
+                    <select id="rol" name="rol" required>
+                        <option value="alumne">Alumne</option>
+                        <option value="professor">Professor</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+            <?php else: ?>
+                <input type="hidden" name="rol" value="alumne">
+            <?php endif; ?>
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="error-message"><?php echo $_SESSION['error']; ?></div>
                 <?php unset($_SESSION['error']); ?>
@@ -41,5 +46,6 @@
             <button type="submit" class="btn-login">Registrar</button>
         </form>
     </div>
+    <script src="/M12.1/my-app/public/js/password-validation.js"></script>
 </body>
 </html>
