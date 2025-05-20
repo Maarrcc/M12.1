@@ -13,18 +13,18 @@
         <h2>Accés al Sistema</h2>
         <form method="POST" action="/M12.1/my-app/public/index.php?controller=auth&action=validate">
             <div class="form-group">
-                <label for="username">Usuario:</label>
+                <label for="username">Usuari:</label>
                 <input type="text" id="username" name="username" required>
             </div>
             <div class="form-group">
-                <label for="password">Contraseña:</label>
+                <label for="password">Contrasenya:</label>
                 <input type="password" id="password" name="password" required>
             </div>
             <?php if (isset($_SESSION['error'])): ?>
                 <div class="error-message"><?php echo $_SESSION['error']; ?></div>
                 <?php unset($_SESSION['error']); ?>
             <?php endif; ?>
-            <button type="submit" class="btn-login">Iniciar sesión</button>
+            <button type="submit" class="btn-login">Iniciar Sessio</button>
         </form>
         <div class="register-link">
             <a href="/M12.1/my-app/public/index.php?controller=auth&action=register">Registrar nou usuari</a>

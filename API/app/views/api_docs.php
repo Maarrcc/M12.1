@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ca">
 
@@ -59,6 +60,38 @@
             </div>
         </div>
 
+        <!-- GET /canvis -->
+        <div class="mb-6 md:mb-8">
+            <h3 class="text-lg md:text-xl font-semibold flex items-center gap-2">
+                <span class="font-bold px-2 py-1 rounded text-green-700 bg-green-200 text-sm sm:text-base">GET</span>
+                <span>/canvis</span>
+            </h3>
+            <p class="text-gray-700 text-sm sm:text-base">Obté la llista de canvis d'horari.</p>
+
+            <h4 class="text-base sm:text-lg font-semibold mt-4">Paràmetres de consulta:</h4>
+            <ul class="list-disc pl-5 text-gray-700 text-sm sm:text-base">
+                <li><code class="bg-gray-200 px-1 rounded">data</code> (opcional) - Filtrar per data (ex: "2024-05-03")
+                </li>
+            </ul>
+
+            <div class="mt-4">
+                <h5 class="text-sm sm:text-md font-semibold">Exemple de resposta:</h5>
+                <pre class="bg-gray-50 p-4 rounded-lg text-gray-800 text-xs sm:text-sm overflow-x-auto">
+{
+    "success": true,
+    "data": [
+        {
+            "id": 1,
+            "descripcio": "Canvi d'aula per la M12",
+            "data": "2024-05-03",
+            "hora_inici": "15:00",
+            "hora_fi": "16:00"
+        }
+    ]
+}</pre>
+            </div>
+        </div>
+
         <!-- Exemples pràctics -->
         <h2 class="text-xl md:text-2xl font-bold mt-8 md:mt-10 mb-4">Exemples d'Ús</h2>
 
@@ -81,6 +114,10 @@ fetch('http://localhost/M12.1/API/public/horari?curs=DAW-Primer', {
 })
 .then(response => response.json())
 .then(data => console.log(data));</pre>
+
+         <h4 class="text-base sm:text-lg font-semibold mt-4">Exemple per obtenir canvis amb cURL:</h4>
+        <pre class="bg-gray-50 p-4 rounded-lg text-gray-800 text-xs sm:text-sm overflow-x-auto">
+curl -H "X-API-Key: ApiProva" http://localhost/M12.1/API/public/canvis?data=2024-05-03</pre>
     </div>
 </body>
 

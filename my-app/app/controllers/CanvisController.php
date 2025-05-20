@@ -123,7 +123,7 @@ class CanvisController
                 $data['id_professor_substitut']
             );
 
-            $mail->setFrom('info@racogamer.cat', 'Sistema de Horarios');
+            $mail->setFrom('info@racogamer.cat', 'Sistema Horaris');
             
             // Añadir destinatarios solo si tienen notificaciones activadas
             if (!empty($detallesCambio['alumnes_emails'])) {

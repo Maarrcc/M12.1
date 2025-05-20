@@ -234,8 +234,9 @@
 
   /* Al activar la clase .active, el menú se expande */
   .nav-links.active {
-    max-height: 500px; /* Valor suficientemente alto para mostrar todos los elementos */
-    opacity: 1;
+   max-height: calc(100vh - 60px); /* Ajusta 60px según la altura de tu navbar (.nav-menu) */
+   opacity: 1;
+   overflow-y: auto;
   }
 
   .nav-links li {

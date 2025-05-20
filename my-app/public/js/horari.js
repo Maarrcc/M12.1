@@ -169,7 +169,7 @@ function actualitzaHorari(datesSetmana, cursComplet) {
             grid.style.opacity = "1";
             const errorDiv = document.createElement("div");
             errorDiv.id = "error-message";
-            errorDiv.textContent = "Error al cargar el horario";
+            errorDiv.textContent = "Error en carregar l'horari";
             document.querySelector(".horari-container").prepend(errorDiv);
         }
     });
